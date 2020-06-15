@@ -37,6 +37,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "public_network", ip: "{ip_address}", bridge: "{interface}"
 
   config.vm.provider "virtualbox" do |vb|
+    vb.name   = "{hostname}"
     vb.memory = "{memory}"
   end
 

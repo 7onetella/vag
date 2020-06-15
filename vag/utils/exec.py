@@ -12,16 +12,18 @@ def get_script_path(relative_path):
     return path + '/scripts/{}'.format(relative_path)
 
 
-def run(cmd, output_format='text'):
+def run(cmd, capture_output=False):
     # https://www.endpoint.com/blog/2015/01/28/getting-realtime-output-using-python
     process = Popen(split(cmd), stdout = PIPE, shell = False, encoding='utf8')
 
+    lines = []
     while True:
         line = process.stdout.readline()
         if line == '' and process.poll() is not None:
             break
-        if line and output_format == 'text':
+        if line and not capture_output:
             print(line.rstrip())
+        lines.append(line.rstrip())
 
     returncode = process.poll()
-    return returncode
+    return (returncode, lines)
