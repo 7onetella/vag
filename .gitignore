@@ -9,3 +9,5 @@ build
 _build
 
 .vscode
+
+Vagrantfile

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vag"
-version = "0.1.1"
+version = "0.1.2"
 description = "vagrant utility cli tool"
 authors = ["Seven Tella <7onetella@gmail.com>"]
 license = "MIT"
@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.7"
 Click = "^7.1.2"
 untangle = "^1.1.1"
+jinja2 = "^2.11.2"
 
 [tool.poetry.scripts]
 vag = "vag.console.application:main"
