@@ -1,6 +1,9 @@
 # vag
 vag is a command line utility tool for vagrant
 
+## Github repo
+[vag](https://github.com/7onetella/vag)
+
 ## Documentation
 [read the docs](https://vag.readthedocs.io/en/latest/index.html)
 
