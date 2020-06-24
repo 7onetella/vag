@@ -1,10 +1,9 @@
-import os
-import subprocess
-import sys
-import vag
 import inspect
-from subprocess import Popen, PIPE
+import os
 from shlex import split
+from subprocess import Popen, PIPE
+
+import vag
 
 
 def get_script_path(relative_path): 
@@ -26,4 +25,5 @@ def run(cmd, capture_output=False):
         lines.append(line.rstrip())
 
     returncode = process.poll()
-    return (returncode, lines)
+
+    return returncode, lines

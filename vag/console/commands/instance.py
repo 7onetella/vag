@@ -4,6 +4,7 @@ import click
 from vag.utils import exec
 import untangle
 
+
 @click.group()
 def instance():
     """ Vagrant Instance Automation """
@@ -25,7 +26,7 @@ def list(debug):
 
     for instance in lines:
         if len(instance) > 0:
-            f = open(f'{home}/VirtualBox VMs/{instance}/{instance}.vbox','r')
+            f = open(f'{home}/VirtualBox VMs/{instance}/{instance}.vbox', 'r')
             xml_str = f.read()
 
             obj = untangle.parse(xml_str)
@@ -52,4 +53,4 @@ memory : {memory}""")
             f.close()
 
 
-    
+

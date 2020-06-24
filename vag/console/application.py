@@ -63,7 +63,7 @@ end""")
         interface=interface,
         service=service
     )
-    f = open('./Vagrantfile','w+')
+    f = open('./Vagrantfile', 'w+')
     f.write(output)
     f.close()
     print(output)

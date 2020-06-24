@@ -9,5 +9,6 @@ build
 _build
 
 .vscode
+.idea
 
 Vagrantfile
