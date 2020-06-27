@@ -22,7 +22,7 @@ def version():
 @click.argument('hostname', default='', metavar='<hostname>')
 @click.argument('ip_address', default='', metavar='<ip_address>')
 @click.option('--interface', default='eno1', help='network interface')
-@click.option('--memory', default='1024', help='memory')
+@click.option('--memory', default='512', help='memory')
 @click.option('--service', default='', help='service to start')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def init(box, hostname, ip_address, interface, memory, service, debug):
@@ -40,17 +40,17 @@ Vagrant.configure("2") do |config|
   {% if service|length %}
   config.vm.provision "shell",
     run: "always",
-    inline: "systemctl start {{ service }}"
+    inline: "sleep 60; systemctl start {{ service }}"
   {% endif %}
   config.vm.provider "virtualbox" do |vb|
     vb.name   = "{{ hostname }}"
     vb.memory = "{{ memory }}"
   end
 
-  config.vm.hostname = "{{ hostname }}"
-  config.ssh.insert_key = false # 1
-  config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa'] # 2
-  config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys" # 3
+  config.vm.hostname          = "{{ hostname }}"
+  config.ssh.insert_key       = false
+  config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
+  config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
 
 end""")
 
