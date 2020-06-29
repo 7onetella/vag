@@ -1,4 +1,5 @@
 import click
+import os
 from os.path import expanduser
 from vag import __version__
 from vag.console.commands.instance import instance
@@ -19,8 +20,8 @@ def version():
 
 @root.command()
 @click.argument('box', default='7onetella/ubuntu-20.04', metavar='<box>')
-@click.argument('hostname', default='', metavar='<hostname>')
-@click.argument('ip_address', default='', metavar='<ip_address>')
+@click.option('--hostname', default='', metavar='<hostname>')
+@click.option('--ip_address', default='', metavar='<ip_address>')
 @click.option('--interface', default='eno1', help='network interface')
 @click.option('--memory', default='512', help='memory')
 @click.option('--service', default='', help='service to start')
@@ -29,6 +30,11 @@ def init(box, hostname, ip_address, interface, memory, service, debug):
     """Initializes a new Vagrantfile"""
 
     home = expanduser("~")
+
+    if not hostname:
+      cwd = os.getcwd()
+      current_folder_name = cwd[cwd.rfind('/')+1:]
+      hostname = current_folder_name
 
     template = Template("""
 Vagrant.configure("2") do |config|

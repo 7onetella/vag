@@ -11,6 +11,8 @@ Sub command that creates a new Vagrantfile
 
     flags:
         --interface  network interface
+        --hostname   vm hostname
+        --ip_address ip address to bind the interface to
         --memory     memory
         --service    service to start
         --debug      debug this command
