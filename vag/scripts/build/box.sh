@@ -39,15 +39,13 @@ push() {
 }
 
 usage() {
-  echo -e "Usage   : box.sh <build|clean|start> <box_name>"
+  echo -e "Example : box.sh clean 7onetella consul-cluster"
   echo
   echo -e "Example : box.sh build /tmp/vagrant/templates/consul-cluster.json"
   echo
-  echo -e "Example : box.sh init consul-cluster"
+  echo -e "Example : box.sh test 7onetella consul-cluster"
   echo
-  echo -e "Example : box.sh clean 7onetella consul-cluster"
-  echo
-  echo -e "Example : box.sh push consul-cluster"
+  echo -e "Example : box.sh push 7onetella consul-cluster"
 }
 
 case $1 in
