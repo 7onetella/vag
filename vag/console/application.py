@@ -23,7 +23,7 @@ def version():
 @click.argument('box', default='7onetella/ubuntu-20.04', metavar='<box>')
 @click.option('--hostname', default='', metavar='<hostname>')
 @click.option('--ip_address', default='', metavar='<ip_address>')
-@click.option('--interface', default='eno1', help='network interface')
+@click.option('--interface', default='', help='network interface')
 @click.option('--memory', default='512', help='memory')
 @click.option('--service', default='', help='service to start')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
@@ -32,29 +32,29 @@ def init(box, hostname, ip_address, interface, memory, service, debug):
 
     home = expanduser("~")
 
-    if not hostname:
-      cwd = os.getcwd()
-      current_folder_name = cwd[cwd.rfind('/')+1:]
-      hostname = current_folder_name
+    # if not hostname:
+    #   cwd = os.getcwd()
+    #   current_folder_name = cwd[cwd.rfind('/')+1:]
+    #   hostname = current_folder_name
 
     template = Template("""
 Vagrant.configure("2") do |config|
 
   config.vm.box = "{{ box }}"
-  config.vm.box_url = "file://{{ home }}/.vagrant_boxes/{{ box }}/package.box"
-
+  config.vm.box_url = "file://{{ home }}/.vagrant_boxes/{{ box }}/package.box"{% if ip_address|length %}
   config.vm.network "public_network", ip: "{{ ip_address }}", bridge: "{{ interface }}"
-  {% if service|length %}
+  {% endif %}{% if service|length %}
   config.vm.provision "shell",
     run: "always",
     inline: "sleep 60; systemctl start {{ service }}"
-  {% endif %}
+  {% endif %}{% if hostname|length %}
   config.vm.provider "virtualbox" do |vb|
-    vb.name   = "{{ hostname }}"
-    vb.memory = "{{ memory }}"
+    vb.name   = "{{ hostname }}"{% if memory|length %}
+    vb.memory = "{{ memory }}"{% endif %}
   end
+  
+  config.vm.hostname          = "{{ hostname }}"{% endif %}
 
-  config.vm.hostname          = "{{ hostname }}"
   config.ssh.insert_key       = false
   config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
   config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
@@ -115,7 +115,7 @@ def build(box, base, debug):
 }""")
 
     try:
-        os.makedirs('/tmp/vagrant/templates')
+        os.makedirs(f'/tmp/vagrant/template/{organization}')
     except OSError:
         # do nothing
         pass
@@ -127,7 +127,7 @@ def build(box, base, debug):
         organization=organization,
         version=version
     )
-    template_path = f'/tmp/vagrant/templates/{box_name}.json'
+    template_path = f'/tmp/vagrant/template/{organization}/{box_name}.json'
     f = open(template_path, 'w+')
     f.write(output)
     f.close()
@@ -155,7 +155,7 @@ def push(box, debug):
     box_name = box[box.rfind('/')+1:box.rfind(':')]
     version = box[box.rfind(':') + 1:]
 
-    script_path = exec.get_script_path(f'build/box.sh push {organization} {box_name}')
+    script_path = exec.get_script_path(f'build/box.sh push {organization} {box_name} {version}')
     returncode, lines = exec.run(script_path, False)
     if returncode != 0:
         sys.exit(1)

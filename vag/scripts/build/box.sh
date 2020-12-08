@@ -35,7 +35,7 @@ test() {
 push() {
   organization=$1
   box_name=$2
-  scp -r /tmp/vagrant/build/"${organization}"/"${box_name}" vagrant@tmt:/home/vagrant/.vagrant_boxes/7onetella
+  scp -r /tmp/vagrant/build/"${organization}"/"${box_name}" vagrant@tmt:/home/vagrant/.vagrant/boxes/"${organization}"
 }
 
 usage() {
