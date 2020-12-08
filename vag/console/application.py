@@ -8,6 +8,7 @@ from jinja2 import Template
 from vag.utils import exec
 from vag.utils import hash_util
 
+
 @click.group()
 def root():
     pass
@@ -117,7 +118,7 @@ def build(box, base, debug):
     }""")
 
     try:
-        os.makedirs(f'/tmp/vagrant/template/{organization}')
+        os.makedirs(f'/tmp/vagrant/template/{organization}/{box_name}')
     except OSError:
         # do nothing
         pass
@@ -129,7 +130,7 @@ def build(box, base, debug):
         organization=organization,
         version=version_
     )
-    template_path = f'/tmp/vagrant/template/{organization}/{box_name}.json'
+    template_path = f'/tmp/vagrant/template/{organization}/{box_name}/{box_name}.json'
     f = open(template_path, 'w+')
     f.write(output)
     f.close()
@@ -165,6 +166,12 @@ def push(box, debug, skip):
         if returncode != 0:
             sys.exit(1)
 
+    try:
+        os.makedirs(f'/tmp/vagrant/metadata/{organization}/{box_name}')
+    except OSError:
+        # do nothing
+        pass
+
     metadata_template = Template("""
     {
       "description": "",
@@ -190,7 +197,7 @@ def push(box, debug, skip):
         sha1sum=hash_util.sha1sum(f'/tmp/vagrant/build/{organization}/{box_name}/package.box'),
         version=version_
     )
-    metadata_json_path = f'/tmp/vagrant/template/{organization}/{box_name}_metadata.json'
+    metadata_json_path = f'/tmp/vagrant/metadata/{organization}/{box_name}/metadata.json'
     f = open(metadata_json_path, 'w+')
     f.write(metadata_output)
     f.close()

@@ -41,8 +41,8 @@ push() {
 metadata() {
   organization=$1
   box_name=$2
-  scp /tmp/vagrant/template/"${organization}"/"${box_name}_metadata.json" \
-      vagrant@tmt:/home/vagrant/.vagrant/"${organization}"/"${box_name}"/metadata.json
+  scp -r /tmp/vagrant/metadata/"${organization}"/"${box_name}" \
+      vagrant@tmt:/home/vagrant/.vagrant/"${organization}"
 }
 
 ssh() {
