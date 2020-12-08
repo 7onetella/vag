@@ -38,11 +38,12 @@ def init(box, hostname, ip_address, interface, memory, service, debug):
     #   current_folder_name = cwd[cwd.rfind('/')+1:]
     #   hostname = current_folder_name
 
+    # config.vm.box_url = "file://{{ home }}/.vagrant/boxes/{{ box }}/package.box"
+
     template = Template("""
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "{{ box }}"
-  config.vm.box_url = "file://{{ home }}/.vagrant/boxes/{{ box }}/package.box"{% if ip_address|length %}
+  config.vm.box = "{{ box }}"{% if ip_address|length %}
   config.vm.network "public_network", ip: "{{ ip_address }}", bridge: "{{ interface }}"
   {% endif %}{% if service|length %}
   config.vm.provision "shell",
