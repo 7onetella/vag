@@ -1,5 +1,7 @@
 import inspect
 import os
+import sys
+import shlex
 from shlex import split
 from subprocess import Popen, PIPE, STDOUT
 
@@ -29,3 +31,21 @@ def run(cmd, capture_output=False):
     returncode = process.poll()
 
     return returncode, lines
+
+
+def fork(cmd_str: str, debug=False):
+    if debug:
+        print()
+        print(cmd_str)
+        print
+
+    if sys.stdin.isatty():
+        # CREDIT
+        # https://gist.github.com/bortzmeyer/1284249#gistcomment-3074036
+        pid = os.fork()
+        if pid == 0:  # a child process
+            cmd = shlex.split(cmd_str)
+            os.execv(cmd[0], cmd)
+
+        os.waitpid(pid, 0)
+

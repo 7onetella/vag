@@ -38,6 +38,14 @@ push() {
   scp -r /tmp/vagrant/build/"${organization}"/"${box_name}" vagrant@tmt:/home/vagrant/.vagrant/boxes/"${organization}"
 }
 
+ssh() {
+  organization=$1
+  box_name=$2
+  test_folder=/tmp/vagrant/test/"${organization}"/"${box_name}"
+  cd "${test_folder}"
+  vagrant ssh
+}
+
 usage() {
   echo -e "Example : box.sh clean 7onetella consul-cluster"
   echo
@@ -46,6 +54,8 @@ usage() {
   echo -e "Example : box.sh test 7onetella consul-cluster"
   echo
   echo -e "Example : box.sh push 7onetella consul-cluster"
+  echo
+  echo -e "Example : box.sh ssh 7onetella consul-cluster"
 }
 
 case $1 in
@@ -60,6 +70,10 @@ clean)
 test)
   shift
   test $1 $2
+  ;;
+ssh)
+  shift
+  ssh $1 $2
   ;;
 push)
   shift

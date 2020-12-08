@@ -28,7 +28,7 @@ def version():
 @click.option('--service', default='', help='service to start')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def init(box, hostname, ip_address, interface, memory, service, debug):
-    """Initializes a new Vagrantfile"""
+    """Creates a new Vagrantfile"""
 
     home = expanduser("~")
 
@@ -41,7 +41,7 @@ def init(box, hostname, ip_address, interface, memory, service, debug):
 Vagrant.configure("2") do |config|
 
   config.vm.box = "{{ box }}"
-  config.vm.box_url = "file://{{ home }}/.vagrant_boxes/{{ box }}/package.box"{% if ip_address|length %}
+  config.vm.box_url = "file://{{ home }}/.vagrant/boxes/{{ box }}/package.box"{% if ip_address|length %}
   config.vm.network "public_network", ip: "{{ ip_address }}", bridge: "{{ interface }}"
   {% endif %}{% if service|length %}
   config.vm.provision "shell",
@@ -149,13 +149,12 @@ def build(box, base, debug):
 @click.argument('box', default='', metavar='<box>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def push(box, debug):
-    """Pushes vagrant box"""
+    """Publishes vagrant box to target environment"""
 
     organization = box[:box.rfind('/')]
-    box_name = box[box.rfind('/')+1:box.rfind(':')]
-    version = box[box.rfind(':') + 1:]
+    box_name = box[box.rfind('/')+1:]
 
-    script_path = exec.get_script_path(f'build/box.sh push {organization} {box_name} {version}')
+    script_path = exec.get_script_path(f'build/box.sh push {organization} {box_name}')
     returncode, lines = exec.run(script_path, False)
     if returncode != 0:
         sys.exit(1)
@@ -165,13 +164,40 @@ def push(box, debug):
 @click.argument('box', default='', metavar='<box>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def test(box, debug):
-    """Tests vagrant box"""
+    """Start a test Vagrant instance"""
 
     organization = box[:box.rfind('/')]
-    box_name = box[box.rfind('/')+1:box.rfind(':')]
-    version = box[box.rfind(':') + 1:]
+    box_name = box[box.rfind('/')+1:]
 
     script_path = exec.get_script_path(f'build/box.sh test {organization} {box_name}')
+    returncode, lines = exec.run(script_path, False)
+    if returncode != 0:
+        sys.exit(1)
+
+
+@root.command()
+@click.argument('box', default='', metavar='<box>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def ssh(box, debug):
+    """SSH to vagrant test Vagrant instance"""
+
+    organization = box[:box.rfind('/')]
+    box_name = box[box.rfind('/')+1:]
+
+    script_path = exec.get_script_path(f'build/box.sh ssh {organization} {box_name}')
+    exec.fork(script_path, debug)
+
+
+@root.command()
+@click.argument('box', default='', metavar='<box>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def clean(box, debug):
+    """Cleans up vagrant build, terminates vagrant instance etc"""
+
+    organization = box[:box.rfind('/')]
+    box_name = box[box.rfind('/')+1:]
+
+    script_path = exec.get_script_path(f'build/box.sh clean {organization} {box_name}')
     returncode, lines = exec.run(script_path, False)
     if returncode != 0:
         sys.exit(1)
@@ -183,6 +209,7 @@ root.add_command(init)
 root.add_command(build)
 root.add_command(push)
 root.add_command(test)
+root.add_command(ssh)
 
 
 def main():
