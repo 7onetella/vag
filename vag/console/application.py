@@ -6,6 +6,7 @@ from vag import __version__
 from vag.console.commands.instance import instance
 from jinja2 import Template
 from vag.utils import exec
+from vag.utils import hash_util
 
 @click.group()
 def root():
@@ -87,32 +88,32 @@ def build(box, base, debug):
 
     organization = box[:box.rfind('/')]
     box_name = box[box.rfind('/')+1:box.rfind(':')]
-    version = box[box.rfind(':') + 1:]
+    version_ = box[box.rfind(':') + 1:]
 
     template = Template("""
-{
-  "builders": [
     {
-      "box_name"    : "{{ box }}",
-      "output_dir"  : "/tmp/vagrant/build/{{ organization }}/{{ box_name }}",
-      "box_version" : "{{ version }}",      
-      "communicator": "ssh",
-      "source_path" : "{{ base }}",
-      "provider"    : "virtualbox",
-      "skip_add"    : true,
-      "type"        : "vagrant"
-    }
-  ],
-  "provisioners": [
-    {
-      "ansible_env_vars": [ "ANSIBLE_STDOUT_CALLBACK=debug" ],
-      "extra_arguments" : [ "--extra-vars", "target=default user=vagrant ansible_os_family=Debian" ],
-      "type"            : "ansible",
-      "playbook_file"   : "{{ box_name }}.yml",
-      "user"            : "vagrant"
-    }
-  ]       
-}""")
+      "builders": [
+        {
+          "box_name"    : "{{ box }}",
+          "output_dir"  : "/tmp/vagrant/build/{{ organization }}/{{ box_name }}",
+          "box_version" : "{{ version }}",      
+          "communicator": "ssh",
+          "source_path" : "{{ base }}",
+          "provider"    : "virtualbox",
+          "skip_add"    : true,
+          "type"        : "vagrant"
+        }
+      ],
+      "provisioners": [
+        {
+          "ansible_env_vars": [ "ANSIBLE_STDOUT_CALLBACK=debug" ],
+          "extra_arguments" : [ "--extra-vars", "target=default user=vagrant ansible_os_family=Debian" ],
+          "type"            : "ansible",
+          "playbook_file"   : "{{ box_name }}.yml",
+          "user"            : "vagrant"
+        }
+      ]       
+    }""")
 
     try:
         os.makedirs(f'/tmp/vagrant/template/{organization}')
@@ -125,7 +126,7 @@ def build(box, base, debug):
         base=base,
         box_name=box_name,
         organization=organization,
-        version=version
+        version=version_
     )
     template_path = f'/tmp/vagrant/template/{organization}/{box_name}.json'
     f = open(template_path, 'w+')
@@ -148,13 +149,55 @@ def build(box, base, debug):
 @root.command()
 @click.argument('box', default='', metavar='<box>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def push(box, debug):
+@click.option('--skip', is_flag=True, default=False, help='skip copying the box')
+def push(box, debug, skip):
     """Publishes vagrant box to target environment"""
 
     organization = box[:box.rfind('/')]
-    box_name = box[box.rfind('/')+1:]
+    box_name = box[box.rfind('/')+1:box.rfind(':')]
+    version_ = box[box.rfind(':') + 1:]
 
-    script_path = exec.get_script_path(f'build/box.sh push {organization} {box_name}')
+    if not skip:
+        print("scp-ing the box")
+        script_path = exec.get_script_path(f'build/box.sh push {organization} {box_name}')
+        returncode, lines = exec.run(script_path, False)
+        if returncode != 0:
+            sys.exit(1)
+
+    metadata_template = Template("""
+    {
+      "description": "",
+       "name": "{{ organization }}/{{ box_name }}",
+       "versions": [
+         {
+           "providers": [
+             {
+              "checksum": "{{ sha1sum }}",
+              "checksum_type": "sha1",
+              "name": "virtualbox",
+              "url": "http://tmt.7onetella.net/boxes/{{ organization }}/{{ box_name }}/package.box"
+             }
+           ],
+           "version": "{{ version }}"
+         }
+       ]
+    }""")
+    metadata_output = metadata_template.render(
+        box=box,
+        organization=organization,
+        box_name=box_name,
+        sha1sum=hash_util.sha1sum(f'/tmp/vagrant/build/{organization}/{box_name}/package.box'),
+        version=version_
+    )
+    metadata_json_path = f'/tmp/vagrant/template/{organization}/{box_name}_metadata.json'
+    f = open(metadata_json_path, 'w+')
+    f.write(metadata_output)
+    f.close()
+    if debug:
+        print(metadata_output)
+
+    print("scp-ing the metadata.json")
+    script_path = exec.get_script_path(f'build/box.sh metadata {organization} {box_name}')
     returncode, lines = exec.run(script_path, False)
     if returncode != 0:
         sys.exit(1)

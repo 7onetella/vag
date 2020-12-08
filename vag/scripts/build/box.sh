@@ -38,6 +38,13 @@ push() {
   scp -r /tmp/vagrant/build/"${organization}"/"${box_name}" vagrant@tmt:/home/vagrant/.vagrant/boxes/"${organization}"
 }
 
+metadata() {
+  organization=$1
+  box_name=$2
+  scp /tmp/vagrant/template/"${organization}"/"${box_name}_metadata.json" \
+      vagrant@tmt:/home/vagrant/.vagrant/"${organization}"/"${box_name}"/metadata.json
+}
+
 ssh() {
   organization=$1
   box_name=$2
@@ -78,6 +85,10 @@ ssh)
 push)
   shift
   push $1 $2
+  ;;
+metadata)
+  shift
+  metadata $1 $2
   ;;
 --help)
   usage
