@@ -27,6 +27,7 @@ test() {
   test_folder=/tmp/vagrant/test/"${organization}"/"${box_name}"
   mkdir -p "${test_folder}"
   cd "${test_folder}"
+  vagrant box add --name "${organization}"/"${box_name}" ~/.vagrant/boxes/"${organization}"/"${box_name}"/package.box
   vag init "${organization}"/"${box_name}"
   vagrant up
   pwd
