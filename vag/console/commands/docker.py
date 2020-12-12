@@ -37,23 +37,20 @@ def deploy(name, debug):
 
       group "{{ group }}" {
         count = 1
+        network {
+            port "http" {}
+        }            
             
         task "service" {
             driver = "docker"
             config {
                 image = "{{ image }}"
-                port_map {
-                    http = {{ port }}
-                }        
+                ports = [ "http" ]
             }
     
             resources {
                 cpu = 20
                 memory = {{ memory }}
-                network {
-                    mbits = 100
-                    port "http" {}
-                }            
             }
     
             service {
