@@ -31,14 +31,14 @@ def deploy(name, debug):
       type = "service"
 
       update {
-        stagger      = "30s"
+        stagger      = "60s"
         max_parallel = 1
       }
 
       group "{{ group }}" {
         count = 1
         network {
-            port "http" {}
+            port "http" { to = {{ port }} }
         }            
             
         task "service" {
@@ -58,7 +58,7 @@ def deploy(name, debug):
                 port = "http"
                 check {
                     type     = "http"
-                    path     = "/api/health"
+                    path     = "{{ health_check }}"
                     interval = "10s"
                     timeout  = "2s"
                 }
@@ -89,6 +89,7 @@ def deploy(name, debug):
         image=image,
         memory=get(data, 'memory', 128),
         port=get(data, 'port', 4242),
+        health_check=get(data, 'health', '/api/health'),
         envs=data['envs']
     )
     template_path = f'/tmp/nomad/{service}-{group}.nomad'

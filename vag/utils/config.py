@@ -11,8 +11,8 @@ def read(file_path, debug=False):
     for key in config[section]:
         val = config[section][key]
         if key.startswith('env.'):
-            env_name = key[key.rfind('.')+1:]
-            envs[env_name.upper()] = val
+            key = key.replace('env.', '')
+            envs[key.upper()] = val
         else:
             data[key] = val
 
