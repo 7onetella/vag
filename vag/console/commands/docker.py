@@ -77,6 +77,11 @@ def deploy(name, debug):
     if debug:
         print(f'data is \n {data}')
 
+    # if image is specified use it stead of deriving it from service name
+    image_from_config = get(data, 'image', '')
+    if image_from_config:
+        image = image_from_config
+
     try:
         os.makedirs(f'/tmp/nomad')
     except OSError:
