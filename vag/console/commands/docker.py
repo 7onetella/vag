@@ -45,7 +45,24 @@ def deploy(name, debug):
             driver = "docker"
             config {
                 image = "{{ image }}"
-                ports = [ "http" ]
+                ports = [ "http" ]{% if log_driver|length %}
+                
+                logging {
+                   type = "elasticsearch"
+                   config {
+                        elasticsearch-url="http://elasticsearch-dev.7onetella.net:80"
+                        elasticsearch-sniff=false
+                        elasticsearch-index="docker-%F"
+                        elasticsearch-type="log"
+                        elasticsearch-timeout="60s"
+                        elasticsearch-version=5
+                        elasticsearch-fields="containerID,containerName,containerImageID,containerImageName,containerCreated"
+                        elasticsearch-bulk-workers=1
+                        elasticsearch-bulk-actions=1000
+                        elasticsearch-bulk-size=1024
+                        elasticsearch-bulk-flush-interval="1s"                   
+                    }
+                }{% endif %}
             }
     
             resources {
@@ -95,6 +112,7 @@ def deploy(name, debug):
         memory=get(data, 'memory', 128),
         port=get(data, 'port', 4242),
         health_check=get(data, 'health', '/api/health'),
+        log_driver=get(data, 'log_driver', ''),
         envs=data['envs']
     )
     template_path = f'/tmp/nomad/{service}-{group}.nomad'
