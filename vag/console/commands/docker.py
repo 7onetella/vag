@@ -41,7 +41,7 @@ def deploy(name, debug):
             port "http" { to = {{ port }} }
         }            
             
-        task "service" {
+        task "{{ service }}-service" {
             driver = "docker"
             config {
                 image = "{{ image }}"
@@ -53,10 +53,10 @@ def deploy(name, debug):
                         elasticsearch-url="http://elasticsearch-dev.7onetella.net:80"
                         elasticsearch-sniff=false
                         elasticsearch-index="docker-%F"
-                        elasticsearch-type="log"
+                        elasticsearch-type="_doc"
                         elasticsearch-timeout="60s"
                         elasticsearch-version=5
-                        elasticsearch-fields="containerID,containerName,containerImageID,containerImageName,containerCreated"
+                        elasticsearch-fields="containerID,containerName,containerImageName"
                         elasticsearch-bulk-workers=1
                         elasticsearch-bulk-actions=1000
                         elasticsearch-bulk-size=1024
