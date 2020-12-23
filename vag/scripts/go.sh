@@ -10,7 +10,7 @@ HOST_IP=$(curl -s "http://consul.7onetella.net:8500/v1/health/service/builder-de
 shopt -s expand_aliases
 alias ssh='ssh -o LogLevel=error -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT} root@${HOST_IP}'
 
-echo $0
+#echo $0
 
 build() {
   repo=$1
