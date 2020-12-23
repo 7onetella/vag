@@ -5,6 +5,7 @@ from os.path import expanduser
 from vag import __version__
 from vag.console.commands.instance import instance
 from vag.console.commands.docker import docker
+from vag.console.commands.builder import go
 from jinja2 import Template
 from vag.utils import exec
 from vag.utils import hash_util
@@ -263,6 +264,7 @@ root.add_command(push)
 root.add_command(test)
 root.add_command(ssh)
 root.add_command(docker)
+root.add_command(go)
 
 
 def main():

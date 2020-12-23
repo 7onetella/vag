@@ -33,6 +33,12 @@ def run(cmd, capture_output=False):
     return returncode, lines
 
 
+def run_raw(cmd):
+    # os.system preserves ANSI escaped output
+    return_code = os.system(cmd)
+    return return_code
+
+
 def fork(cmd_str: str, debug=False):
     if debug:
         print()
