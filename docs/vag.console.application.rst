@@ -1,7 +1,7 @@
 
 
 init
-----
+****
 Sub command that creates a new Vagrantfile
 
 .. code-block:: bash
@@ -39,3 +39,19 @@ Sub command that creates a new Vagrantfile
           config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys" # 3
 
         end
+
+build
+*****
+Sub command that builds vagrant box. <box> is made of three parts. organization / box name : version.
+
+.. code-block:: bash
+
+    usage:
+        vag build <box>
+
+    flags:
+        --base       <base>
+        --debug      debug this command
+
+    examples:
+        vag build 7onetella/nomad-node:1.0.0
