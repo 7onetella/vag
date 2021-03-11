@@ -5,7 +5,7 @@ from os.path import expanduser
 from vag import __version__
 from vag.console.commands.instance import instance
 from vag.console.commands.docker import docker
-from vag.console.commands.builder import go
+from vag.console.commands.go import go
 from jinja2 import Template
 from vag.utils import exec
 from vag.utils import hash_util

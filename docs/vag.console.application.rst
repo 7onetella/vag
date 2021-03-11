@@ -7,24 +7,24 @@ Sub command that creates a new Vagrantfile
 .. code-block:: bash
 
     usage:
-        vag init <box> <hostname> <ip_address>
+        vag init <box>
 
     flags:
         --interface  network interface
         --hostname   vm hostname
         --ip_address ip address to bind the interface to
+        --interface  network interface name
         --memory     memory
         --service    service to start
         --debug      debug this command
 
     examples:
 
-        $ vag 7onetella/ubuntu-20.04 web-server 192.168.0.50
+        $ vag 7onetella/ubuntu-20.04 --hostname web-server --ip_address 192.168.0.50 --interface eno1
 
         Vagrant.configure("2") do |config|
 
           config.vm.box = "7onetella/ubuntu-20.04"
-          config.vm.box_url = "file:///Users/user1/.vagrant_boxes/7onetella/ubuntu-20.04/package.box"
 
           config.vm.network "public_network", ip: "192.168.0.50", bridge: "eno1"
 

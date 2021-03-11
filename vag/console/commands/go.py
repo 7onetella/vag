@@ -3,7 +3,9 @@ import sys
 import shlex
 import click
 import requests
+from os.path import expanduser
 from vag.utils import exec
+from vag.utils import config
 
 
 @click.group()
@@ -13,13 +15,29 @@ def go():
 
 
 @go.command()
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def init(debug: bool):
+    """initializes go related config"""
+
+    home = expanduser("~")
+    vag_config = f'{home}/.vag.conf'
+
+    if os.path.isfile(vag_config):
+        print('config file exists')
+
+    # data = config.read(vag_config)
+
+
+@go.command()
 @click.argument('repo', default='', metavar='<repo>')
 @click.argument('branch', default='', metavar='<branch>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def build(repo: str, branch: str, debug: bool):
     """builds your project"""
     script_path = exec.get_script_path(f'go.sh build {repo} {branch}')
-    print(f'script_path={script_path}')
+
+    if debug:
+        print(f'script_path={script_path}')
     return_code = exec.run_raw(script_path)
     if return_code != 0:
         sys.exit(1)
