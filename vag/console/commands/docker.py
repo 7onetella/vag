@@ -39,13 +39,14 @@ def deploy(name, debug):
         count = 1
         network {
             port "http" { to = {{ port }} }
+            port "ssh"  { to = 22 }
         }            
             
         task "{{ service }}-service" {
             driver = "docker"
             config {
                 image = "{{ image }}"
-                ports = [ "http" ]{% if log_driver|length %}
+                ports = [ "http", "ssh" ]{% if log_driver|length %}
                 
                 logging {
                    type = "elasticsearch"
