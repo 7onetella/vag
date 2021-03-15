@@ -64,6 +64,10 @@ def deploy(name, debug):
                         elasticsearch-bulk-flush-interval="1s"                   
                     }
                 }{% endif %}
+
+                volumes = [
+                    "/var/run/docker.sock:/var/run/docker.sock"
+                ]                
             }
     
             resources {
