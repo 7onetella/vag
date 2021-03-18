@@ -51,7 +51,7 @@ def deploy(name, debug):
                 logging {
                    type = "elasticsearch"
                    config {
-                        elasticsearch-url="http://elasticsearch-dev.7onetella.net:80"
+                        elasticsearch-url="https://elasticsearch-dev.7onetella.net:443"
                         elasticsearch-sniff=false
                         elasticsearch-index="docker-%F"
                         elasticsearch-type="_doc"
