@@ -22,7 +22,7 @@ def deploy(name, debug):
     group = name[name.rfind('-')+1:name.rfind(':')]
     version = name[name.rfind(':')+1:]
 
-    image = f'docker-registry.7onetella.net:5000/7onetella/{service}:{version}'
+    image = f'docker-registry.7onetella.net/7onetella/{service}:{version}'
 
     template = Template("""
     job "{{ service }}" {
