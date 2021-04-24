@@ -22,7 +22,7 @@ def deploy(name, debug):
     group = name[name.rfind('-')+1:name.rfind(':')]
     version = name[name.rfind(':')+1:]
 
-    image = f'docker-registry.7onetella.net:5000/7onetella/{service}:{version}'
+    image = f'docker-registry.7onetella.net/7onetella/{service}:{version}'
 
     template = Template("""
     job "{{ service }}" {
@@ -51,7 +51,7 @@ def deploy(name, debug):
                 logging {
                    type = "elasticsearch"
                    config {
-                        elasticsearch-url="http://elasticsearch-dev.7onetella.net:80"
+                        elasticsearch-url="https://elasticsearch-dev.7onetella.net:443"
                         elasticsearch-sniff=false
                         elasticsearch-index="docker-%F"
                         elasticsearch-type="_doc"
