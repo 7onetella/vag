@@ -70,7 +70,7 @@ def ssh(debug: bool):
 def create_ssh(ip: str, port: str):
     """Create a ssh session"""
 
-    ssh = f'/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p {port} root@{ip}'
+    ssh = f'/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p {port} builder@{ip}'
 
     pid = os.fork()
     if pid == 0:  # a child process

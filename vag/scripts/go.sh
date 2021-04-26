@@ -8,7 +8,7 @@ HOST_IP=$(curl -s "http://consul.7onetella.net:8500/v1/health/service/builder-de
 # https://docs.w3cub.com/bash/html_node/aliases.html
 # Aliases are not expanded when the shell is not interactive, unless the expand_aliases shell option is set using shopt (see The Shopt Builtin).
 shopt -s expand_aliases
-alias ssh='ssh -o LogLevel=error -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT} root@${HOST_IP}'
+alias ssh='ssh -o LogLevel=error -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT} builder@${HOST_IP}'
 
 #echo $0
 
