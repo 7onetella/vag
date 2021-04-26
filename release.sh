@@ -13,5 +13,5 @@ git add pyproject.toml
 git add vag/__init__.py
 git commit -m "releasing ${new_version}"
 git push -u origin
-git tag vag-${new_vers}
-git push origin tag vag-${new_vers}
+git tag vag-${new_version}
+git push origin tag vag-${new_version}
