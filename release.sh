@@ -2,7 +2,7 @@
 
 poetry version patch --no-ansi
 new_version=$(cat pyproject.toml | grep "^version = \"*\"" | cut -d'"' -f2)
-sed -i "" "s/__version__ = .*/__version__ = \"${new_vers}\"/g" vag/__init__.py
+sed -i "" "s/__version__ = .*/__version__ = \"${new_version}\"/g" vag/__init__.py
 
 poetry install
 poetry build
