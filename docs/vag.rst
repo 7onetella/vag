@@ -8,3 +8,4 @@ vag
    vag.console.commands.vagrant
    vag.console.commands.docker
    vag.console.commands.remote
+   vag.console.commands.coder
