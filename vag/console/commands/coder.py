@@ -15,9 +15,20 @@ def coder():
 def ssh(debug: bool):
     """SSH into codeserver"""
     allocations = requests.get('http://nomad.7onetella.net:4646/v1/job/codeserver/allocations').json()
-    alloc_id = allocations[0]['ID']
+    if debug:
+        print(allocations)
+
+    alloc_id = ''
+    for a in allocations:
+        if a['TaskStates']['codeserver-service']['State'] == 'running':
+            alloc_id = a['ID']
+
+    if debug:
+        print(f'alloc_id = {alloc_id}')
 
     alloc = requests.get(f'http://nomad.7onetella.net:4646/v1/allocation/{alloc_id}').json()
+    if debug:
+        print(alloc)
 
     ip = alloc['Resources']['Networks'][0]['IP']
     dynamic_ports = alloc['Resources']['Networks'][0]['DynamicPorts']
