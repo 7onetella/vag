@@ -1,3 +1,11 @@
+version
+*******
+Sub command prints version
 
-.. automodule:: vag.console.application 
-   :show-inheritance:
+.. code-block:: bash
+
+    usage:
+        vag version
+
+    examples:
+        $ vag version

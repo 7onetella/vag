@@ -1,16 +1,3 @@
-"""
-version
-*******
-Sub command prints version
-
-.. code-block:: bash
-
-    usage:
-        vag version
-
-    examples:
-        $ vag version
-"""
 import click
 from vag import __version__
 from vag.console.commands.vagrant import vagrant
