@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vag"
-version = "0.1.30"
+version = "0.1.31"
 description = "vagrant utility cli tool"
 authors = ["Seven Tella <7onetella@gmail.com>"]
 license = "MIT"
