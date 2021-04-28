@@ -63,18 +63,19 @@ def ssh(debug: bool):
     ip = health[0]['Service']['Address']
     port = health[0]['Service']['TaggedAddresses']['lan_ipv4']['Port']
 
-    create_ssh(ip, port)
+    create_ssh(ip, port, 'builder', debug)
 
 
 # CREDIT: https://gist.github.com/bortzmeyer/1284249#gistcomment-3074036
-def create_ssh(ip: str, port: str):
+def create_ssh(ip: str, port: str, user: str, debug: bool):
     """Create a ssh session"""
 
-    ssh = f'/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p {port} builder@{ip}'
+    ssh = f'/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -p {port} {user}@{ip}'
 
     pid = os.fork()
     if pid == 0:  # a child process
-        print(f"{ssh}")
+        if debug: 
+            print(f"{ssh}")
         cmd = shlex.split(ssh)
         os.execv(cmd[0], cmd)
 
