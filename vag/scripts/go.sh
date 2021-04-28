@@ -19,9 +19,9 @@ build() {
   CMDS=$(cat << EOF
 # set -x
 
-. ~/.exports
+. ~/.bashrc
 
-cd /root
+cd /home/builder
 
 if [[ -d "${repo}" ]]; then
     cd ${repo}
@@ -49,9 +49,9 @@ deploy() {
   CMDS=$(cat << EOF
 # set -x
 
-. ~/.exports
+. ~/.bashrc
 
-cd /root
+cd /home/builder
 
 cd ${repo}
 

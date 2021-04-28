@@ -41,6 +41,6 @@ $ pip install dist/*.whl
 
 edit and run 
 ```bash
-$ poetry run vag instance list
+$ poetry run vag vagrant list
 ```
 
