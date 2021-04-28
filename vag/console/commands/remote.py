@@ -1,3 +1,53 @@
+"""
+remote
+******
+Command group for remote builder automation
+
+build
+-----
+Sub command runs build in remote builder.
+
+.. code-block:: bash
+
+    usage:
+        vag remote build <repo> <branch>
+
+    flags:
+        --debug      debug this command
+
+    examples:
+        vag remote build users master
+
+deploy
+------
+Sub command runs deploy in remote builder.
+
+.. code-block:: bash
+
+    usage:
+        vag remote deploy <repo> <stage>
+
+    flags:
+        --debug      debug this command
+
+    examples:
+        vag remote deploy users dev
+
+ssh
+---
+Sub command ssh to remote builder.
+
+.. code-block:: bash
+
+    usage:
+        vag remote ssh
+
+    flags:
+        --debug      debug this command
+
+    examples:
+        vag remote ssh
+"""
 import os
 import sys
 import shlex
@@ -9,12 +59,12 @@ from vag.utils import config
 
 
 @click.group()
-def go():
-    """ Builder automation """
+def remote():
+    """ Remote builder automation """
     pass
 
 
-@go.command()
+@remote.command()
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def init(debug: bool):
     """initializes go related config"""
@@ -28,7 +78,7 @@ def init(debug: bool):
     # data = config.read(vag_config)
 
 
-@go.command()
+@remote.command()
 @click.argument('repo', default='', metavar='<repo>')
 @click.argument('branch', default='', metavar='<branch>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
@@ -43,19 +93,19 @@ def build(repo: str, branch: str, debug: bool):
         sys.exit(1)
 
 
-@go.command()
+@remote.command()
 @click.argument('repo', default='', metavar='<repo>')
 @click.argument('stage', default='', metavar='<stage>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def deploy(repo: str, stage: str, debug: bool):
-    """builds your project"""
+    """deploys your project"""
     script_path = exec.get_script_path(f'go.sh deploy {repo} {stage}')
     return_code = exec.run_raw(script_path)
     if return_code != 0:
         sys.exit(1)
 
 
-@go.command()
+@remote.command()
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def ssh(debug: bool):
     """SSH into builder"""

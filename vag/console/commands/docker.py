@@ -5,27 +5,20 @@ Command group for docker automation
 
 deploy
 ------
-Sub command that builds vagrant box. This internally uses Hashcorp's `Packer <https://www.packer.io/>`_ to create vagrant
-box. Packer expects a template file to be specified. The template file describes how vagrant box is to be built. This tool
-generates the template file for you. The required implicit input is `Ansible <https://www.packer.io/docs/provisioners/ansible>`_ playbook.
-In your terminal, change directory to where your Ansible playbook reside and execute this command.
+Sub command deploys docker image in nomad environment.
 
 .. code-block:: bash
 
     usage:
-        vag build <box>
+        vag docker deploy <service-name>
 
     flags:
-        --base       <base>
         --debug      debug this command
 
     examples:
-        vag build 7onetella/nomad-node:1.0.0
+        vag docker deploy builder-dev:1.0.0
 
-<box> is made of three parts. [organization] / [box name] : [version].
-[box name].yml should be the name of your playbook. For example, nomad-nomad.yml should be in the current directory.
 """
-
 import os
 import click
 import sys
@@ -43,7 +36,7 @@ def docker():
 @click.argument('name', default='', metavar='<service>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def deploy(name, debug):
-    """builds running vagrant instances"""
+    """deploys docker image in nomad environment"""
 
     # password-dev:0.8.4
     service = name[:name.rfind('-')]
