@@ -38,4 +38,4 @@ def ssh(debug: bool):
             port = p['Value']
             break
 
-    create_ssh(ip, port, 'coder', debug)
+    create_ssh(ip, port, 'coder', debug, '/home/coder/workspace')
