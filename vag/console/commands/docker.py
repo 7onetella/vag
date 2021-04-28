@@ -1,3 +1,31 @@
+"""
+docker
+******
+Command group for docker automation
+
+deploy
+------
+Sub command that builds vagrant box. This internally uses Hashcorp's `Packer <https://www.packer.io/>`_ to create vagrant
+box. Packer expects a template file to be specified. The template file describes how vagrant box is to be built. This tool
+generates the template file for you. The required implicit input is `Ansible <https://www.packer.io/docs/provisioners/ansible>`_ playbook.
+In your terminal, change directory to where your Ansible playbook reside and execute this command.
+
+.. code-block:: bash
+
+    usage:
+        vag build <box>
+
+    flags:
+        --base       <base>
+        --debug      debug this command
+
+    examples:
+        vag build 7onetella/nomad-node:1.0.0
+
+<box> is made of three parts. [organization] / [box name] : [version].
+[box name].yml should be the name of your playbook. For example, nomad-nomad.yml should be in the current directory.
+"""
+
 import os
 import click
 import sys
