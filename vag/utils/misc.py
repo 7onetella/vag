@@ -5,12 +5,12 @@ import click
 
 
 # CREDIT: https://gist.github.com/bortzmeyer/1284249#gistcomment-3074036
-def create_ssh(ip: str, port: str, user: str, debug: bool, cd_folder: str = None):
+def create_ssh(ip: str, port: str, user: str, debug: bool, cd_folder: str = None, shell: str = 'bash'):
     """Create a ssh session"""
 
     ssh = f'/usr/bin/ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -p {port} {user}@{ip}'
     if cd_folder:
-        ssh = ssh + f' -t "cd {cd_folder}; bash --login"'
+        ssh = ssh + f' -t "cd {cd_folder}; {shell} --login"'
 
     pid = os.fork()
     if pid == 0:  # a child process
