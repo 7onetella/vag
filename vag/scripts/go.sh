@@ -15,13 +15,14 @@ alias ssh='ssh -o LogLevel=error -o UserKnownHostsFile=/dev/null -o StrictHostKe
 build() {
   repo=$1
   branch=$2
+  username=coder
 
   CMDS=$(cat << EOF
 # set -x
 
 . ~/.bashrc
 
-cd /home/builder
+cd /home/${username}
 
 if [[ -d "${repo}" ]]; then
     cd ${repo}
@@ -51,7 +52,7 @@ deploy() {
 
 . ~/.bashrc
 
-cd /home/builder
+cd /home/${username}
 
 cd ${repo}
 

@@ -46,7 +46,7 @@ def deploy(name, debug):
             driver = "docker"
             config {
                 image = "{{ image }}"
-                ports = [ "http", "ssh" ]{% if log_driver|length %}
+                ports = [ "http", "ssh" ]{% if log_driver is not none %}
                 
                 logging {
                    type = "elasticsearch"
@@ -73,8 +73,8 @@ def deploy(name, debug):
             resources {
                 cpu = 20
                 memory = {{ memory }}
-            }
-    
+            }{% if health_check is not none %}
+
             service {
                 tags = ["urlprefix-{{ service }}-{{ group }}.7onetella.net/"]
                 port = "http"
@@ -84,7 +84,11 @@ def deploy(name, debug):
                     interval = "10s"
                     timeout  = "2s"
                 }
-            }
+            }{% else %}
+
+            service {
+                port = "ssh"
+            }{% endif %}
     
             env {  {% for key, value in envs.items() %}
                 {{ key }} = "{{ value }}"{% endfor %}                
@@ -116,8 +120,8 @@ def deploy(name, debug):
         image=image,
         memory=get(data, 'memory', 128),
         port=get(data, 'port', 4242),
-        health_check=get(data, 'health', '/api/health'),
-        log_driver=get(data, 'log_driver', ''),
+        health_check=get(data, 'health', None),
+        log_driver=get(data, 'log_driver', None),
         envs=data['envs']
     )
     template_path = f'/tmp/nomad/{service}-{group}.nomad'
@@ -137,7 +141,10 @@ def get(data: dict, key: str, default_value):
     if key in data:
         return data[key]
     else:
-        return default_value
+        if default_value:
+            return default_value
+        else:
+            return None
 
 
 

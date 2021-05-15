@@ -63,5 +63,5 @@ def ssh(debug: bool):
     ip = health[0]['Service']['Address']
     port = health[0]['Service']['TaggedAddresses']['lan_ipv4']['Port']
 
-    create_ssh(ip, port, 'builder', debug)
+    create_ssh(ip, port, 'coder', debug)
 
