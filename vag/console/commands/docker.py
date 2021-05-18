@@ -5,7 +5,7 @@ from jinja2 import Template
 from vag.utils import config
 from vag.utils import exec
 from vag.utils.nomadutil import get_version, get_ip_port
-from vag.utils.misc import create_ssh
+from vag.utils.misc import create_ssh, do_scp
 
 
 @click.group()
@@ -198,6 +198,23 @@ def ssh(name:str, debug: bool):
         print(f'ip = {ip}, port = {port}')
 
     create_ssh(ip, port, 'coder', debug, '/home/coder/', 'zsh')
+
+
+@docker.command()
+@click.argument('name', default='', metavar='<service>')
+@click.argument('src', default='', metavar='<src>')
+@click.argument('target', default='', metavar='<target>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def scp(name:str, src: str, target: str, debug: bool):
+    """SCP to docker container"""
+    service = name[:name.rfind('-')]
+    group = name[name.rfind('-')+1:]
+
+    ip, port = get_ip_port(service, debug)
+    if debug:
+        print(f'ip = {ip}, port = {port}')
+
+    do_scp(ip, port, 'coder', src, target, debug)
 
 
 def get(data: dict, key: str, default_value):

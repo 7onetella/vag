@@ -20,3 +20,18 @@ def create_ssh(ip: str, port: str, user: str, debug: bool, cd_folder: str = None
         os.execv(cmd[0], cmd)
 
     os.wait()
+
+
+def do_scp(ip: str, port: str, user: str, src: str, target: str, debug: bool):
+    """Create a ssh session"""
+
+    scp = f'/usr/bin/scp -P {port} -r -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR {src} {user}@{ip}:{target}'
+
+    pid = os.fork()
+    if pid == 0:  # a child process
+        if debug: 
+            print(f"{scp}")
+        cmd = shlex.split(scp)
+        os.execv(cmd[0], cmd)
+
+    os.wait()
