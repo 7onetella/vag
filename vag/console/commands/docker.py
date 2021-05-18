@@ -22,7 +22,12 @@ def deploy(name, debug):
     group = name[name.rfind('-')+1:name.rfind(':')]
     version = name[name.rfind(':')+1:]
 
-    image = f'docker-registry.7onetella.net/7onetella/{service}:{version}'
+    docker_registry = os.environ('DOCKER_REGISTRY')
+    if not docker_registry:
+        print('missing $DOCKER_REGISTRY environment variable')
+        sys.exit(1)
+
+    image = f'{docker_registry}/7onetella/{service}:{version}'
 
     template = Template("""
     job "{{ service }}" {
@@ -76,7 +81,7 @@ def deploy(name, debug):
             }{% if health_check is not none %}
 
             service {
-                tags = ["urlprefix-{{ service }}-{{ group }}.7onetella.net/"]
+                tags = ["urlprefix-{{urlprefix}}"]
                 port = "http"
                 check {
                     type     = "http"
@@ -108,6 +113,13 @@ def deploy(name, debug):
     if image_from_config:
         image = image_from_config
 
+    urlprefix = f'{{ service }}-{{ group }}.7onetella.net/'
+
+    host = get(data, 'host', '')
+    path = get(data, 'path', '/')
+    if host:
+        urlprefix = f'{{host}}{{path}}' 
+
     try:
         os.makedirs(f'/tmp/nomad')
     except OSError:
@@ -122,6 +134,7 @@ def deploy(name, debug):
         port=get(data, 'port', 4242),
         health_check=get(data, 'health', None),
         log_driver=get(data, 'log_driver', None),
+        urlprefix=urlprefix,
         envs=data['envs']
     )
     template_path = f'/tmp/nomad/{service}-{group}.nomad'
