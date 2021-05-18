@@ -204,8 +204,9 @@ def ssh(name:str, debug: bool):
 @click.argument('name', default='', metavar='<service>')
 @click.argument('src', default='', metavar='<src>')
 @click.argument('target', default='', metavar='<target>')
+@click.option('--show', is_flag=True, default=False, help='print scp command')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def scp(name:str, src: str, target: str, debug: bool):
+def scp(name:str, src: str, target: str, show: bool, debug: bool):
     """SCP to docker container"""
     service = name[:name.rfind('-')]
     group = name[name.rfind('-')+1:]
@@ -214,7 +215,7 @@ def scp(name:str, src: str, target: str, debug: bool):
     if debug:
         print(f'ip = {ip}, port = {port}')
 
-    do_scp(ip, port, 'coder', src, target, debug)
+    do_scp(ip, port, 'coder', src, target, show, debug)
 
 
 def get(data: dict, key: str, default_value):

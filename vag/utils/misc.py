@@ -22,10 +22,13 @@ def create_ssh(ip: str, port: str, user: str, debug: bool, cd_folder: str = None
     os.wait()
 
 
-def do_scp(ip: str, port: str, user: str, src: str, target: str, debug: bool):
+def do_scp(ip: str, port: str, user: str, src: str, target: str, show: bool, debug: bool):
     """Create a ssh session"""
 
     scp = f'/usr/bin/scp -P {port} -r -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR {src} {user}@{ip}:{target}'
+    if show:
+        print(scp)
+        return
 
     pid = os.fork()
     if pid == 0:  # a child process
