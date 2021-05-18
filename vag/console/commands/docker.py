@@ -4,11 +4,45 @@ import sys
 from jinja2 import Template
 from vag.utils import config
 from vag.utils import exec
+from vag.utils.nomadutil import get_version
+
 
 @click.group()
 def docker():
     """ Docker automation """
     pass
+
+
+@docker.command()
+@click.argument('semver', default='', metavar='<major|minor|patch>')
+@click.argument('name', default='', metavar='<service>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def version(semver: str, name:str, debug: bool):
+    """calculate next release version using semver"""
+
+    # password-dev
+    service = name[:name.rfind('-')]
+    group = name[name.rfind('-')+1:]
+    current_version = get_version(service, debug)
+
+    major = int(current_version.split('.')[0])
+    minor = int(current_version.split('.')[1])
+    patch = int(current_version.split('.')[2])
+
+    if semver == 'major':
+        next_major = major + 1
+        print(f'{next_major}.{minor}.{patch}')
+        return
+
+    if semver == 'minor':
+        next_minor = minor + 1
+        print(f'{major}.{next_minor}.{patch}')
+        return
+
+    if semver == 'patch':
+        next_patch = patch + 1
+        print(f'{major}.{minor}.{next_patch}')
+        return
 
 
 @docker.command()

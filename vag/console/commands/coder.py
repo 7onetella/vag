@@ -1,5 +1,5 @@
 import os
-from vag.utils.sshutil import get_ip_port
+from vag.utils.nomadutil import get_ip_port
 import click
 import sys
 import requests
