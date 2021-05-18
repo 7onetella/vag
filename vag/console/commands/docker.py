@@ -4,7 +4,8 @@ import sys
 from jinja2 import Template
 from vag.utils import config
 from vag.utils import exec
-from vag.utils.nomadutil import get_version
+from vag.utils.nomadutil import get_version, get_ip_port
+from vag.utils.misc import create_ssh
 
 
 @click.group()
@@ -56,7 +57,7 @@ def deploy(name, debug):
     group = name[name.rfind('-')+1:name.rfind(':')]
     version = name[name.rfind(':')+1:]
 
-    docker_registry = os.environ('DOCKER_REGISTRY')
+    docker_registry = os.getenv('DOCKER_REGISTRY')
     if not docker_registry:
         print('missing $DOCKER_REGISTRY environment variable')
         sys.exit(1)
@@ -182,6 +183,21 @@ def deploy(name, debug):
     returncode, lines = exec.run(script_path, False)
     if returncode != 0:
         sys.exit(1)
+
+
+@docker.command()
+@click.argument('name', default='', metavar='<service>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def ssh(name:str, debug: bool):
+    """SSH into docker container"""
+    service = name[:name.rfind('-')]
+    group = name[name.rfind('-')+1:]
+
+    ip, port = get_ip_port('codeserver', debug)
+    if debug:
+        print(f'ip = {ip}, port = {port}')
+
+    create_ssh(ip, port, 'coder', debug, '/home/coder/workspace', 'zsh')
 
 
 def get(data: dict, key: str, default_value):
