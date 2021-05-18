@@ -148,12 +148,12 @@ def deploy(name, debug):
     if image_from_config:
         image = image_from_config
 
-    urlprefix = f'{{ service }}-{{ group }}.7onetella.net/'
+    urlprefix = f'{ service }-{ group }.7onetella.net/'
 
     host = get(data, 'host', '')
     path = get(data, 'path', '/')
     if host:
-        urlprefix = f'{{host}}{{path}}' 
+        urlprefix = f'{host}{path}' 
 
     try:
         os.makedirs(f'/tmp/nomad')
@@ -193,11 +193,11 @@ def ssh(name:str, debug: bool):
     service = name[:name.rfind('-')]
     group = name[name.rfind('-')+1:]
 
-    ip, port = get_ip_port('codeserver', debug)
+    ip, port = get_ip_port(service, debug)
     if debug:
         print(f'ip = {ip}, port = {port}')
 
-    create_ssh(ip, port, 'coder', debug, '/home/coder/workspace', 'zsh')
+    create_ssh(ip, port, 'coder', debug, '/home/coder/', 'zsh')
 
 
 def get(data: dict, key: str, default_value):
