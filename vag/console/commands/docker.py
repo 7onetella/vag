@@ -55,6 +55,8 @@ def deploy(name_revision, debug):
     # password-dev:0.8.4
     tokens = name_revision.split(':')
     service, group = get_service_and_group(tokens[0])
+    if debug:
+        print(f'service = {service}, group = {group}')
     version = tokens[1]
 
     docker_registry = os.getenv('DOCKER_REGISTRY')
@@ -139,6 +141,9 @@ def deploy(name_revision, debug):
 
     current_dir = os.getcwd()
     app_file = f'{current_dir}/{service}-{group}.app'
+    if debug:
+        print(f'app_file = {app_file}')
+        
     data = config.read(app_file)
     if debug:
         print(f'data is \n {data}')
@@ -211,7 +216,7 @@ def ssh(name:str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def scp(name:str, src: str, target: str, show: bool, debug: bool):
     """SCP to docker container"""
-    service, group = get_service_and_group(tokens[0])
+    service, group = get_service_and_group(name)
 
     ip, port = get_ip_port(service, debug)
     if debug:
