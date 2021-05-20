@@ -20,6 +20,8 @@ def get_version(job_name: str, group: str, debug: bool):
     if debug:
         print(f'job_name = {job_name}, group = {group}')
     job = get_job(job_name, debug)
+    if job is None:
+        return '1.0.0'
 
     task_groups = job['TaskGroups']
     for task_group in task_groups:
@@ -42,12 +44,14 @@ def get_job(job_name: str, debug: bool):
     job_api_url = f'{nomad_addr}/v1/job/{job_name}'
     if debug:
         print(job_api_url)
-        
-    job = requests.get(job_api_url).json()
-    if debug:
-        print(job)
-    return job
-
+    
+    response = requests.get(job_api_url)
+    if response:
+        job = response.json()
+        if debug:
+            print(job)
+        return job
+    return None
 
 
 def get_allocation(job_name: str, group: str, debug: bool):
