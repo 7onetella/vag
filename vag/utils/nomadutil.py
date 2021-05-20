@@ -2,8 +2,8 @@ import requests
 import os
 import sys
 
-def get_ip_port(job_name: str, debug: bool):
-    alloc = get_allocation(job_name, debug)
+def get_ip_port(job_name: str, group: str, debug: bool):
+    alloc = get_allocation(job_name, group, debug)
 
     ip = alloc['Resources']['Networks'][0]['IP']
     dynamic_ports = alloc['Resources']['Networks'][0]['DynamicPorts']
@@ -16,17 +16,41 @@ def get_ip_port(job_name: str, debug: bool):
     return ip, port
 
 
-def get_version(job_name: str, debug: bool):
-    alloc = get_allocation(job_name, debug)
-
-    image = alloc['Job']['TaskGroups'][0]['Tasks'][0]['Config']['image']
+def get_version(job_name: str, group: str, debug: bool):
     if debug:
-        print(image)
-    version = image[image.rfind(':')+1:]
-    return version
+        print(f'job_name = {job_name}, group = {group}')
+    job = get_job(job_name, debug)
+
+    task_groups = job['TaskGroups']
+    for task_group in task_groups:
+        task_group_name = task_group['Name']
+        if task_group_name == group:
+            image = task_group['Tasks'][0]['Config']['image']
+            if debug:
+                print(image)
+            version = image[image.rfind(':')+1:]
+            return version
+    return ''
 
 
-def get_allocation(job_name: str, debug: bool):
+def get_job(job_name: str, debug: bool):
+    nomad_addr = os.getenv('NOMAD_ADDR')
+    if not nomad_addr:
+        print('missing $NOMAD_ADDR environment variable')
+        sys.exit(1)
+
+    job_api_url = f'{nomad_addr}/v1/job/{job_name}'
+    if debug:
+        print(job_api_url)
+        
+    job = requests.get(job_api_url).json()
+    if debug:
+        print(job)
+    return job
+
+
+
+def get_allocation(job_name: str, group: str, debug: bool):
     nomad_addr = os.getenv('NOMAD_ADDR')
     if not nomad_addr:
         print('missing $NOMAD_ADDR environment variable')
@@ -42,13 +66,24 @@ def get_allocation(job_name: str, debug: bool):
 
     alloc_id = ''
     for a in allocations:
+        task_group = a['TaskGroup']
+        if debug:
+            print(f'task_group = {task_group}')
+
+        if not task_group == group:
+            continue
+
         task_states = a['TaskStates']
-        if 'container' in task_states and task_states['container']['State'] == 'running':
-            alloc_id = a['ID']
+        if 'container' in task_states: 
+            task_state = task_states['container']['State']
+            if task_state == 'running':
+                alloc_id = a['ID']
         else:
             # for backwards compatibility, remove this after containers are redployed
-            if a['TaskStates'][f'{job_name}-service']['State'] == 'running':
-                alloc_id = a['ID']
+            if f'{job_name}-service' in task_states:
+                task_state = task_states['{job_name}-service']['State']
+                if task_state == 'running':
+                    alloc_id = a['ID']
 
     if debug:
         print(f'alloc_id = {alloc_id}')

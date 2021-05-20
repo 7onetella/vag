@@ -24,7 +24,7 @@ def version(semver: str, name:str, debug: bool):
 
     # password-dev or codeserver-f121-public
     service, group = get_service_and_group(name)
-    current_version = get_version(service, debug)
+    current_version = get_version(service, group, debug)
 
     major = int(current_version.split('.')[0])
     minor = int(current_version.split('.')[1])
@@ -195,9 +195,9 @@ def deploy(name_revision, debug):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def ssh(name:str, debug: bool):
     """SSH into docker container"""
-    service, _ = get_service_and_group(name)
+    service, group = get_service_and_group(name)
 
-    ip, port = get_ip_port(service, debug)
+    ip, port = get_ip_port(service, group, debug)
     if debug:
         print(f'ip = {ip}, port = {port}')
     
@@ -218,7 +218,7 @@ def scp(name:str, src: str, target: str, show: bool, debug: bool):
     """SCP to docker container"""
     service, group = get_service_and_group(name)
 
-    ip, port = get_ip_port(service, debug)
+    ip, port = get_ip_port(service, group, debug)
     if debug:
         print(f'ip = {ip}, port = {port}')
 
