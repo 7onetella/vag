@@ -42,8 +42,13 @@ def get_allocation(job_name: str, debug: bool):
 
     alloc_id = ''
     for a in allocations:
-        if a['TaskStates'][f'{job_name}-service']['State'] == 'running':
+        task_states = a['TaskStates']
+        if 'container' in task_states and task_states['container']['State'] == 'running':
             alloc_id = a['ID']
+        else:
+            # for backwards compatibility, remove this after containers are redployed
+            if a['TaskStates'][f'{job_name}-service']['State'] == 'running':
+                alloc_id = a['ID']
 
     if debug:
         print(f'alloc_id = {alloc_id}')

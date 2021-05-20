@@ -2,8 +2,8 @@
 
 # set -x
 
-SSH_PORT=$(curl -s "http://consul.7onetella.net:8500/v1/health/service/builder-dev-builder-service?dc=dc1" | jq -r ".[0].Service.TaggedAddresses.lan_ipv4.Port")
-HOST_IP=$(curl -s "http://consul.7onetella.net:8500/v1/health/service/builder-dev-builder-service?dc=dc1"  | jq -r ".[0].Service.Address")
+SSH_PORT=$(curl -s "http://consul.7onetella.net:8500/v1/health/service/builder-dev-container?dc=dc1" | jq -r ".[0].Service.TaggedAddresses.lan_ipv4.Port")
+HOST_IP=$(curl -s "http://consul.7onetella.net:8500/v1/health/service/builder-dev-container?dc=dc1"  | jq -r ".[0].Service.Address")
 
 # https://docs.w3cub.com/bash/html_node/aliases.html
 # Aliases are not expanded when the shell is not interactive, unless the expand_aliases shell option is set using shopt (see The Shopt Builtin).

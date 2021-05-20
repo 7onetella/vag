@@ -6,6 +6,7 @@ from vag.utils import config
 from vag.utils import exec
 from vag.utils.nomadutil import get_version, get_ip_port
 from vag.utils.misc import create_ssh, do_scp
+from vag.utils.string_util import get_service_and_group
 
 
 @click.group()
@@ -21,9 +22,8 @@ def docker():
 def version(semver: str, name:str, debug: bool):
     """calculate next release version using semver"""
 
-    # password-dev
-    service = name[:name.rfind('-')]
-    group = name[name.rfind('-')+1:]
+    # password-dev or codeserver-f121-public
+    service, group = get_service_and_group(name)
     current_version = get_version(service, debug)
 
     major = int(current_version.split('.')[0])
@@ -47,15 +47,15 @@ def version(semver: str, name:str, debug: bool):
 
 
 @docker.command()
-@click.argument('name', default='', metavar='<service>')
+@click.argument('name_revision', default='', metavar='<service>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def deploy(name, debug):
+def deploy(name_revision, debug):
     """deploys docker image in nomad environment"""
 
     # password-dev:0.8.4
-    service = name[:name.rfind('-')]
-    group = name[name.rfind('-')+1:name.rfind(':')]
-    version = name[name.rfind(':')+1:]
+    tokens = name_revision.split(':')
+    service, group = get_service_and_group(tokens[0])
+    version = tokens[1]
 
     docker_registry = os.getenv('DOCKER_REGISTRY')
     if not docker_registry:
@@ -82,7 +82,7 @@ def deploy(name, debug):
             port "ssh"  { to = 22 }
         }            
             
-        task "{{ service }}-service" {
+        task "container" {
             driver = "docker"
             config {
                 image = "{{ image }}"
@@ -190,14 +190,17 @@ def deploy(name, debug):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def ssh(name:str, debug: bool):
     """SSH into docker container"""
-    service = name[:name.rfind('-')]
-    group = name[name.rfind('-')+1:]
+    service, _ = get_service_and_group(name)
 
     ip, port = get_ip_port(service, debug)
     if debug:
         print(f'ip = {ip}, port = {port}')
+    
+    landing_path = '/home/coder'
+    if 'codeserver' in service:
+        landing_path = '/home/coder/workspace'
 
-    create_ssh(ip, port, 'coder', debug, '/home/coder/', 'zsh')
+    create_ssh(ip, port, 'coder', debug, landing_path, 'zsh')
 
 
 @docker.command()
@@ -208,8 +211,7 @@ def ssh(name:str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def scp(name:str, src: str, target: str, show: bool, debug: bool):
     """SCP to docker container"""
-    service = name[:name.rfind('-')]
-    group = name[name.rfind('-')+1:]
+    service, group = get_service_and_group(tokens[0])
 
     ip, port = get_ip_port(service, debug)
     if debug:

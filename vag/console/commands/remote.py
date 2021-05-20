@@ -53,15 +53,3 @@ def deploy(repo: str, stage: str, debug: bool):
     return_code = exec.run_raw(script_path)
     if return_code != 0:
         sys.exit(1)
-
-
-@remote.command()
-@click.option('--debug', is_flag=True, default=False, help='debug this command')
-def ssh(debug: bool):
-    """SSH into builder"""
-    health = requests.get('http://consul.7onetella.net:8500/v1/health/service/builder-dev-builder-service?dc=dc1').json()
-    ip = health[0]['Service']['Address']
-    port = health[0]['Service']['TaggedAddresses']['lan_ipv4']['Port']
-
-    create_ssh(ip, port, 'coder', debug)
-
