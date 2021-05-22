@@ -47,24 +47,26 @@ def version(semver: str, name:str, debug: bool):
 
 
 @docker.command()
-@click.argument('name_revision', default='', metavar='<service>')
+@click.argument('repo_name_revision', default='', metavar='<service>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def deploy(name_revision, debug):
+def deploy(repo_name_revision, debug):
     """deploys docker image in nomad environment"""
 
-    # password-dev:0.8.4
+    # docker-registry.7onetella.net/7onetella/password-dev:0.8.4
+    last_slash_idx = repo_name_revision.rfind('/')
+    docker_registry_uri = repo_name_revision[:last_slash_idx]
+    name_revision = repo_name_revision[last_slash_idx+1:]
+
     tokens = name_revision.split(':')
     service, group = get_service_and_group(tokens[0])
     if debug:
         print(f'service = {service}, group = {group}')
     version = tokens[1]
 
-    docker_registry = os.getenv('DOCKER_REGISTRY')
-    if not docker_registry:
-        print('missing $DOCKER_REGISTRY environment variable')
-        sys.exit(1)
-
-    image = f'{docker_registry}/7onetella/{service}:{version}'
+    image = f'{docker_registry_uri}/{service}:{version}'
+    if debug:
+        print(f'image = {image}')
+        return 0
 
     template = Template("""
     job "{{ service }}" {
