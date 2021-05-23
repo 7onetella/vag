@@ -66,7 +66,6 @@ def deploy(repo_name_revision, debug):
     image = f'{docker_registry_uri}/{service}:{version}'
     if debug:
         print(f'image = {image}')
-        return 0
 
     template = Template("""
     job "{{ service }}" {
@@ -120,7 +119,7 @@ def deploy(repo_name_revision, debug):
             }{% if health_check is not none %}
 
             service {
-                tags = ["urlprefix-{{urlprefix}}"]
+                tags = [ {% for tag in tags %}{% if loop.index0 > 0 %},{% endif %} "{{tag}}"{% endfor %} ]
                 port = "http"
                 check {
                     type     = "http"
@@ -146,7 +145,12 @@ def deploy(repo_name_revision, debug):
     if debug:
         print(f'app_file = {app_file}')
         
-    data = config.read(app_file)
+    try:
+        data = config.read(app_file)
+    except IndexError:
+        print(f'error while processing {app_file}')
+        sys.exit(1)
+
     if debug:
         print(f'data is \n {data}')
 
@@ -155,12 +159,19 @@ def deploy(repo_name_revision, debug):
     if image_from_config:
         image = image_from_config
 
-    urlprefix = f'{ service }-{ group }.7onetella.net/'
+    tags = data['tags']
 
-    host = get(data, 'host', '')
-    path = get(data, 'path', '/')
-    if host:
-        urlprefix = f'{host}{path}' 
+    if not tags:        
+        urlprefix = f'urlprefix-{ service }-{ group }.7onetella.net/'
+
+        host = get(data, 'host', '')
+        path = get(data, 'path', '/')
+        if host:
+            urlprefix = f'urlprefix-{host}{path}'
+
+        tags.append(urlprefix)
+    if debug:
+        print(f'tags = {tags}')
 
     try:
         os.makedirs(f'/tmp/nomad')
@@ -176,7 +187,7 @@ def deploy(repo_name_revision, debug):
         port=get(data, 'port', 4242),
         health_check=get(data, 'health', None),
         log_driver=get(data, 'log_driver', None),
-        urlprefix=urlprefix,
+        tags=tags,
         envs=data['envs']
     )
     template_path = f'/tmp/nomad/{service}-{group}.nomad'
@@ -185,6 +196,7 @@ def deploy(repo_name_revision, debug):
     f.close()
     if debug:
         print(output)
+        return 0
 
     script_path = exec.get_script_path(f'nomad.sh {template_path}')
     returncode, lines = exec.run(script_path, False)
