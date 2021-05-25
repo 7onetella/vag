@@ -243,19 +243,24 @@ def scp(name:str, src: str, target: str, show: bool, debug: bool):
 
 @docker.command()
 @click.argument('userid', default='', metavar='<userid>')
-@click.argument('password', default='', metavar='<password>')
-@click.argument('email', default='', metavar='<email>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def pre_build(userid:str, password: str, email: str, debug: bool):
+def pre_build(userid:str, debug: bool):
     """Generates config files need by docker build"""
 
     document = ""
-    for line in sys.stdin:
-        document += line 
+    # if tty
+    if sys.stdin.isatty():
+        document = read_file(f'./profile-{userid}.yml')
+    else: # if pipe
+        for line in sys.stdin:
+            document += line
 
     profile = yaml.load(document, Loader=yaml.FullLoader)
     if debug: 
         print(f'profile = {profile}')
+
+    password = profile['password']
+    email = profile['email']
 
     # ------------------------------------------------------------------
     if 'private_key' in profile:
@@ -340,6 +345,14 @@ def write_file(file_path: str, body: str):
     f = open(file_path, 'w+')
     f.write(body)
     f.close()
+
+
+def read_file(file_path: str) -> str:
+    print(f'reading {file_path}')
+    f = open(file_path, 'r')
+    body = f.read()
+    f.close()
+    return body
 
 
 def delete_file(file_path: str):
