@@ -258,9 +258,10 @@ def pre_build(userid:str, password: str, email: str, debug: bool):
         print(f'profile = {profile}')
 
     # ------------------------------------------------------------------
-    write_file('./.ssh/id_rsa', profile['private_key'])
-    st = os.stat('./.ssh/id_rsa')
-    os.chmod('./.ssh/id_rsa', stat.S_IRUSR | stat.S_IWUSR)
+    if 'private_key' in profile:
+        write_file('./.ssh/id_rsa', profile['private_key'])
+        st = os.stat('./.ssh/id_rsa')
+        os.chmod('./.ssh/id_rsa', stat.S_IRUSR | stat.S_IWUSR)
 
     # ------------------------------------------------------------------
     write_file('./config.yml', render_template("""bind-addr: 0.0.0.0:9991
@@ -286,23 +287,23 @@ host    = {{ ide }}-{{ userid }}.curiosityworks.org
 """, userid=userid, ide=profile['ide']))
 
     # ------------------------------------------------------------------
-    write_file('./repositories.txt', render_template("""{% for repo_uri in repositories %}{% if loop.index0 > 0 %}\n{% endif %}{{ repo_uri }}{% endfor %}""", repositories=profile['repositories']))
-
+    if 'repositories' in profile and profile['repositories']:
+        write_file('./repositories.txt', render_template("""{% for repo_uri in repositories %}{% if loop.index0 > 0 %}\n{% endif %}{{ repo_uri }}{% endfor %}""", repositories=profile['repositories']))
+    else:
+        write_file('./repositories.txt', '')
+        
     # ------------------------------------------------------------------
-    if debug:
-        print(f'snippets = {profile["snippets"]}')
-
-    snippets = [snippet['body'] for snippet in profile['snippets']]    
-    write_file('./runtime_install.sh', render_template("""#!/bin/bash -e
+    if 'snippets' in profile:
+        snippets = [snippet['body'] for snippet in profile['snippets']]    
+        write_file('./runtime_install.sh', render_template("""#!/bin/bash -e
     
 set -x
 
 {% for snippet in snippets %}{{ snippet }}
 
 {% endfor %}# snippets end here""", snippets=snippets))
-
-    st = os.stat('./runtime_install.sh')
-    os.chmod('./runtime_install.sh', st.st_mode | stat.S_IEXEC)
+        st = os.stat('./runtime_install.sh')
+        os.chmod('./runtime_install.sh', st.st_mode | stat.S_IEXEC)
 
 
 @docker.command()
