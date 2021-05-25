@@ -257,7 +257,10 @@ def pre_build(userid:str, password: str, email: str, debug: bool):
     if debug: 
         print(f'profile = {profile}')
 
+    # ------------------------------------------------------------------
     write_file('./.ssh/id_rsa', profile['private_key'])
+    st = os.stat('./.ssh/id_rsa')
+    os.chmod('./.ssh/id_rsa', stat.S_IRUSR | stat.S_IWUSR)
 
     # ------------------------------------------------------------------
     write_file('./config.yml', render_template("""bind-addr: 0.0.0.0:9991
