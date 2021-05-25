@@ -7,6 +7,8 @@ from vag.utils import exec
 from vag.utils.nomadutil import get_version, get_ip_port
 from vag.utils.misc import create_ssh, do_scp
 from vag.utils.string_util import get_service_and_group
+import yaml
+import stat
 
 
 @click.group()
@@ -239,6 +241,86 @@ def scp(name:str, src: str, target: str, show: bool, debug: bool):
     do_scp(ip, port, 'coder', src, target, show, debug)
 
 
+@docker.command()
+@click.argument('userid', default='', metavar='<userid>')
+@click.argument('password', default='', metavar='<password>')
+@click.argument('email', default='', metavar='<email>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def pre_build(userid:str, password: str, email: str, debug: bool):
+    """Generates config files need by docker build"""
+
+    document = ""
+    for line in sys.stdin:
+        document += line 
+
+    profile = yaml.load(document, Loader=yaml.FullLoader)
+    if debug: 
+        print(f'profile = {profile}')
+
+    write_file('./.ssh/id_rsa', profile['private_key'])
+
+    # ------------------------------------------------------------------
+    write_file('./config.yml', render_template("""bind-addr: 0.0.0.0:9991
+auth: password
+password: {{ password }}
+cert: false    
+""", password=password))
+
+    # ------------------------------------------------------------------
+    write_file('./.gitconfig', render_template("""[credential]
+        helper = store
+[user]
+	name = {{ name }}
+	email = {{ email }}""", name=password, email=email))
+
+    # ------------------------------------------------------------------
+    app_file_path = f'./{profile["ide"]}-{userid}-public.app'
+    write_file(app_file_path, render_template("""[vscode]
+memory  = 2048
+port    = 9991
+health  = /
+host    = {{ ide }}-{{ userid }}.curiosityworks.org
+""", userid=userid, ide=profile['ide']))
+
+    # ------------------------------------------------------------------
+    write_file('./repositories.txt', render_template("""{% for repo_uri in repositories %}{% if loop.index0 > 0 %}\n{% endif %}{{ repo_uri }}{% endfor %}""", repositories=profile['repositories']))
+
+    # ------------------------------------------------------------------
+    if debug:
+        print(f'snippets = {profile["snippets"]}')
+
+    snippets = [snippet['body'] for snippet in profile['snippets']]    
+    write_file('./runtime_install.sh', render_template("""#!/bin/bash -e
+    
+set -x
+
+{% for snippet in snippets %}{{ snippet }}
+
+{% endfor %}# snippets end here""", snippets=snippets))
+
+    st = os.stat('./runtime_install.sh')
+    os.chmod('./runtime_install.sh', st.st_mode | stat.S_IEXEC)
+
+
+@docker.command()
+@click.argument('service', default='', metavar='<service>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def post_build(service: str, debug: bool):
+    """Deletes config files generated in pre-build"""
+
+    delete_file('./.ssh/id_rsa')
+
+    delete_file('./config.yml')
+
+    delete_file('./.gitconfig')
+
+    delete_file(f'{service}-public.app')
+
+    delete_file('./repositories.txt')
+
+    delete_file('./runtime_install.sh')
+
+
 def get(data: dict, key: str, default_value):
     if key in data:
         return data[key]
@@ -249,8 +331,25 @@ def get(data: dict, key: str, default_value):
             return None
 
 
+def write_file(file_path: str, body: str):
+    print(f'writing {file_path}')
+    f = open(file_path, 'w+')
+    f.write(body)
+    f.close()
 
 
+def delete_file(file_path: str):
+    if os.path.exists(file_path):
+        print(f'deleting {file_path}')
+        os.remove(file_path)
+
+
+def render_template(tpl_body: str, **kwargs):
+    template = Template(tpl_body)
+    output = template.render(
+        kwargs
+    )
+    return output
 
 
 
