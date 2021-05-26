@@ -5,16 +5,24 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
+import yaml
+from sqlalchemy import select
 
- 
+def get_connection_str():
+    return 'postgresql://cxuser:cxdev114@tmt-vm11.7onetella.net:5432/devdb'
+
+
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String(30), nullable=False)
+    userid = Column(String(30), nullable=False)
     password = Column(String(30), nullable=False)
     email = Column(String(30), nullable=False)
+    private_key = Column(String(2000), nullable=True)
+    public_key = Column(String(500), nullable=True)
 
 
 class IDE(Base):
@@ -38,18 +46,7 @@ class RuntimeInstall(Base):
     script_body = Column(String(4000))
 
 
-class UserIDE(Base):
-    __tablename__ = 'user_ide'
-    id = Column(Integer, primary_key=True)
-    version = Column(String(30), nullable=True)
-    created = Column(DateTime(30), nullable=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    ide_id = Column(Integer, ForeignKey('ide.id'))
-    user = relationship(User)
-    ide = relationship(IDE)
-
-
-class UserRuntimeIntall(Base):
+class UserRuntimeInstall(Base):
     __tablename__ = 'user_runtime_install'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -58,8 +55,17 @@ class UserRuntimeIntall(Base):
     runtime_install = relationship(RuntimeInstall)
 
 
+class UserIDE(Base):
+    __tablename__ = 'user_ide'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    ide_id = Column(Integer, ForeignKey('ide.id'))
+    user = relationship(User)
+    ide = relationship(IDE)
+
+
 def insert_data():
-    engine = create_engine('sqlite:///sqlalchemy_example.db')
+    engine = create_engine(get_connection_str())
     # Bind the engine to the metadata of the Base class so that the
     # declaratives can be accessed through a DBSession instance
     Base.metadata.bind = engine
@@ -74,63 +80,112 @@ def insert_data():
     # session.rollback()
     session = DBSession()
     
-    new_user = User(name='john', email='foo@example.com', password='12345678')
-    session.add(new_user)
-    session.commit()
-    
+    # ----------- meta data tables -----------
     vscode = IDE(name='vscode')
     intellij = IDE(name='intellij')
     pycharm = IDE(name='pycharm')
     goland = IDE(name='goland')
-
     session.add(vscode)
     session.add(intellij)
     session.add(pycharm)
     session.add(goland)
     session.commit()    
 
-    user_ide1 = UserIDE(version='1.0.1', user=new_user, ide=vscode)
-    user_ide2 = UserIDE(version='1.0.1', user=new_user, ide=intellij)
-    user_ide3 = UserIDE(version='1.0.1', user=new_user, ide=pycharm)
-    user_ide4 = UserIDE(version='1.0.1', user=new_user, ide=goland)
-    session.add(user_ide1)
-    session.add(user_ide2)
-    session.add(user_ide3)
-    session.add(user_ide4)
+    ember_install = RuntimeInstall(name='emberjs', script_body='emberjs install script')
+    tmux_install = RuntimeInstall(name='tmux', script_body='tmux install script')
+    gh_cli_install = RuntimeInstall(name='github cli', script_body='gh install script')
+    session.add(ember_install)
+    session.add(tmux_install)
+    session.add(gh_cli_install)
     session.commit()
 
-    user_repo1 = UserRepo(uri='foo.git', user=new_user)
-    user_repo2 = UserRepo(uri='bar.git', user=new_user)
-    user_repo3 = UserRepo(uri='baz.git', user=new_user)
-    session.add(user_repo1)
-    session.add(user_repo2)
-    session.add(user_repo3)
+    # ----------- user related instance tables -----------
+
+    new_user = User(userid='john', email='foo@example.com', password='12345678', private_key="""rsa key start here 
+
+
+ras key end here""", public_key='rsa public key')
+    session.add(new_user)
+    session.commit()
+
+    session.add(UserIDE(user=new_user, ide=vscode))
+    session.add(UserIDE(user=new_user, ide=intellij))
+    session.add(UserIDE(user=new_user, ide=pycharm))
+    session.add(UserIDE(user=new_user, ide=goland))
+    session.commit()
+
+    session.add(UserRepo(uri='foo.git', user=new_user))
+    session.add(UserRepo(uri='bar.git', user=new_user))
+    session.add(UserRepo(uri='baz.git', user=new_user))
+    session.commit()
+
+    session.add(UserRuntimeInstall(user=new_user, runtime_install=ember_install))
+    session.add(UserRuntimeInstall(user=new_user, runtime_install=tmux_install))
+    session.add(UserRuntimeInstall(user=new_user, runtime_install=gh_cli_install))
     session.commit()
 
 
 def query_data():
-    engine = create_engine('sqlite:///sqlalchemy_example.db')
+    engine = create_engine(get_connection_str())
     Base.metadata.bind = engine    
     DBSession = sessionmaker(bind=engine)
     session = DBSession()    
     userides = session.query(UserIDE).all()
     for useride in userides:
-        print(f'{useride.user.name} {useride.ide.name} {useride.version}')
+        print(f'{useride.ide.name}-{useride.user.userid}')
 
     user_repos = session.query(UserRepo).all()
     for user_repo in user_repos:
         print(f'{user_repo.uri}')
 
+    user_runtime_installs = session.query(UserRuntimeInstall).all()
+    for user_runtime_install in user_runtime_installs:
+        print(f'{user_runtime_install.runtime_install.name}')
+
+
+def get_profile(ide: str, userid: str) -> dict:
+    engine = create_engine(get_connection_str())
+    Base.metadata.bind = engine        
+    session = Session(engine, future=True)
+    
+    statement = select(User).filter_by(userid=userid)
+    user = session.execute(statement).scalars().all()[0]
+
+    statement = select(UserRepo).filter_by(user_id=user.id)
+    repositories = session.execute(statement).scalars().all()
+
+    statement = select(UserRuntimeInstall).filter_by(user_id=user.id)
+    user_runtime_installs = session.execute(statement).scalars().all()
+
+    bodies = [ u_r_i.runtime_install.script_body for u_r_i in user_runtime_installs ]
+    snppiets = []
+    for body in bodies:
+        snppiets.append({'body': body})
+
+    return {
+        'ide': ide,
+        'password': user.password,
+        'email': user.email,
+        'private_key': user.private_key,
+        'public_key': user.public_key,
+        'repositories': [repo.uri for repo in repositories],
+        'snippets': snppiets
+    }
 
 def main(): 
-    engine = create_engine('sqlite:///sqlalchemy_example.db')
+    engine = create_engine(get_connection_str())
+
     Base.metadata.bind = engine
     Base.metadata.drop_all()
     Base.metadata.create_all(engine)
-    print("done creating")
     insert_data()
-    print("done inserting")
-    query_data()
+
+    # query_data()
+
+    print()
+    profile = get_profile("vscode", "john")
+    print(yaml.dump(profile))
+
 
 
 if __name__ == '__main__':
