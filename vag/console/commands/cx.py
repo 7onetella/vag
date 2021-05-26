@@ -108,6 +108,16 @@ def user_public_key(userid: str, debug: bool):
     session.commit()
 
 
+yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str
+
+def repr_str(dumper, data):
+    if '\n' in data:
+        return dumper.represent_scalar(u'tag:yaml.org,2002:str', data, style='|')
+    return dumper.org_represent_str(data)
+
+yaml.add_representer(str, repr_str, Dumper=yaml.SafeDumper)
+
+
 @cx.command()
 @click.argument('userid', default='', metavar='<userid>')
 @click.argument('ide', default='', metavar='<ide>')
@@ -116,4 +126,4 @@ def get_profile(userid: str, ide: str, debug: bool):
     """Prints user ide build profile"""
 
     profile = get_build_profile(ide, userid)
-    print(yaml.dump(profile))
+    print(yaml.safe_dump(profile))
