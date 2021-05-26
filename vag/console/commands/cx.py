@@ -7,6 +7,8 @@ from os.path import expanduser
 from vag.utils import exec
 from vag.utils import config
 from vag.utils.misc import create_ssh
+from vag.utils.cx_db_util import get_build_profile
+import yaml
 
 @click.group()
 def cx():
@@ -21,5 +23,15 @@ def cx():
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def add_user(userid: str, password: str, email: str, debug: bool):
     """builds your project"""
+    pass
+    
 
-    # add new user
+@cx.command()
+@click.argument('ide', default='', metavar='<ide>')
+@click.argument('userid', default='', metavar='<userid>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def get_profile(ide: str, userid: str, debug: bool):
+    """Prints user ide build profile"""
+
+    profile = get_build_profile(ide, userid)
+    print(yaml.dump(profile))
