@@ -47,11 +47,41 @@ def clone_user(src_userid: str, target_userid: str, password: str, email: str, d
     session.add(new_user)
     session.commit()
 
-    user_runtime_installs = find_user_runtime_installs_by_user_id(src_userid.id)
+    user_runtime_installs = find_user_runtime_installs_by_user_id(src_user.id)
     for user_runtime_install in user_runtime_installs:
-        new_user_runtime_install = UserRuntimeInstall(user_id=new_user.id, user_runtime_install_id=user_runtime_install.id)
+        new_user_runtime_install = UserRuntimeInstall(user_id=new_user.id, runtime_install_id=user_runtime_install.runtime_install_id)
         session.add(new_user_runtime_install)
         session.commit()
+
+    user_ides = find_user_ides_by_user_id(src_user.id)
+    for user_ide in user_ides:
+        new_user_ide = UserIDE(user_id=new_user.id, ide_id=user_ide.ide_id)
+        session.add(new_user_ide)
+        session.commit()        
+
+
+@cx.command()
+@click.argument('src_userid', metavar='<src_userid>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def delete_user(src_userid: str, debug: bool):
+    """Clones user"""
+
+    user = find_user_by_userid(src_userid)
+    session = db_session
+
+    user_runtime_installs = find_user_runtime_installs_by_user_id(user.id)
+    for user_runtime_install in user_runtime_installs:
+        session.delete(user_runtime_install)
+        session.commit()        
+
+    user_ides = find_user_ides_by_user_id(user.id)
+    for user_ide in user_ides:
+        session.delete(user_ide)
+        session.commit()            
+
+    session = db_session
+    session.delete(user)
+    session.commit()
 
 
 @cx.command()
