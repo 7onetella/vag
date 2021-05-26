@@ -76,6 +76,40 @@ def add_user_ide(userid: str, ide_name: str, debug: bool):
 
 @cx.command()
 @click.argument('userid', default='', metavar='<userid>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def user_private_key(userid: str, debug: bool):
+    """update user private key"""
+
+    document = ""
+    for line in sys.stdin:
+        document += line
+
+    user = find_user_by_userid(userid)
+    user.private_key = document
+    session = db_session
+    session.add(user)
+    session.commit()
+
+
+@cx.command()
+@click.argument('userid', default='', metavar='<userid>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def user_public_key(userid: str, debug: bool):
+    """update user public key"""
+
+    document = ""
+    for line in sys.stdin:
+        document += line
+
+    user = find_user_by_userid(userid)
+    user.public_key = document
+    session = db_session
+    session.add(user)
+    session.commit()
+
+
+@cx.command()
+@click.argument('userid', default='', metavar='<userid>')
 @click.argument('ide', default='', metavar='<ide>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def get_profile(userid: str, ide: str, debug: bool):
