@@ -11,53 +11,38 @@ from sqlalchemy import select
 from vag.utils.cx_schema import *
 
 
-def get_session():
+def get_session_future():
     engine = create_engine(get_connection_str())
-    Base.metadata.bind = engine    
-    DBSession = sessionmaker(bind=engine)
-    return DBSession()
+    Base.metadata.bind = engine        
+    return Session(engine, future=True)
+
+
+db_session = get_session_future()
 
 
 def find_user_by_userid(userid: str):
-    engine = create_engine(get_connection_str())
-    Base.metadata.bind = engine        
-    session = Session(engine, future=True)
-    
     statement = select(User).filter_by(userid=userid)
-    return session.execute(statement).scalars().one()
+    return db_session.execute(statement).scalars().one()
 
 
 def find_runtime_install_by_name(runtime_install_name: str):
-    engine = create_engine(get_connection_str())
-    Base.metadata.bind = engine        
-    session = Session(engine, future=True)
-    
     statement = select(RuntimeInstall).filter_by(name=runtime_install_name)
-    return session.execute(statement).scalars().one()
+    return db_session.execute(statement).scalars().one()
 
 
 def find_ide_by_name(ide_name: str):
-    engine = create_engine(get_connection_str())
-    Base.metadata.bind = engine        
-    session = Session(engine, future=True)
-    
     statement = select(IDE).filter_by(name=ide_name)
-    return session.execute(statement).scalars().one()
+    return db_session.execute(statement).scalars().one()
 
 
 def get_build_profile(ide: str, userid: str) -> dict:
-    engine = create_engine(get_connection_str())
-    Base.metadata.bind = engine        
-    session = Session(engine, future=True)
-    
-    statement = select(User).filter_by(userid=userid)
-    user = session.execute(statement).scalars().all()[0]
+    user = find_user_by_userid(userid)
 
     statement = select(UserRepo).filter_by(user_id=user.id)
-    repositories = session.execute(statement).scalars().all()
+    repositories = db_session.execute(statement).scalars().all()
 
     statement = select(UserRuntimeInstall).filter_by(user_id=user.id)
-    user_runtime_installs = session.execute(statement).scalars().all()
+    user_runtime_installs = db_session.execute(statement).scalars().all()
 
     bodies = [ u_r_i.runtime_install.script_body for u_r_i in user_runtime_installs ]
     snppiets = []
