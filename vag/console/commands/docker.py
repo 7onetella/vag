@@ -242,23 +242,23 @@ def scp(name:str, src: str, target: str, show: bool, debug: bool):
 
 
 @docker.command()
-@click.argument('userid', default='', metavar='<userid>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def pre_build(userid:str, debug: bool):
+def pre_build(debug: bool):
     """Generates config files need by docker build"""
 
     document = ""
     # if tty
-    if sys.stdin.isatty():
-        document = read_file(f'./profile-{userid}.yml')
-    else: # if pipe
-        for line in sys.stdin:
-            document += line
+    # if sys.stdin.isatty():
+    #     document = read_file(f'./profile-{userid}.yml')
+    # else: # if pipe
+    for line in sys.stdin:
+        document += line
 
     profile = yaml.load(document, Loader=yaml.FullLoader)
     if debug: 
         print(f'profile = {profile}')
 
+    userid = profile['userid']
     password = profile['password']
     email = profile['email']
 

@@ -32,6 +32,7 @@ def get_build_profile(ide: str, userid: str) -> dict:
 
     return {
         'ide': ide,
+        'userid': userid,
         'password': user.password,
         'email': user.email,
         'private_key': user.private_key,
