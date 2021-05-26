@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 import yaml
 from sqlalchemy import select
-from vag.utils.cx_schema import get_connection_str
+from vag.utils.cx_schema import *
 
 
 def insert_data():

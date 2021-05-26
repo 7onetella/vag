@@ -31,18 +31,27 @@ def add_user(userid: str, password: str, email: str, debug: bool):
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('src_userid', metavar='<src_userid>')
 @click.argument('target_userid', metavar='<target_userid>')
+@click.argument('password', metavar='<password>')
+@click.argument('email', metavar='<email>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def clone_user(userid: str, target_userid: str, debug: bool):
+def clone_user(src_userid: str, target_userid: str, password: str, email: str, debug: bool):
     """Clones user"""
 
-    user = find_user_by_userid(userid)
+    src_user = find_user_by_userid(src_userid)
 
     session = db_session
-    new_user = User(userid=userid, password=password, email=email)
+
+    new_user = User(userid=target_userid, password=password, email=email)
     session.add(new_user)
     session.commit()
+
+    user_runtime_installs = find_user_runtime_installs_by_user_id(src_userid.id)
+    for user_runtime_install in user_runtime_installs:
+        new_user_runtime_install = UserRuntimeInstall(user_id=new_user.id, user_runtime_install_id=user_runtime_install.id)
+        session.add(new_user_runtime_install)
+        session.commit()
 
 
 @cx.command()
