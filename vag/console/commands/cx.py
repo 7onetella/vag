@@ -18,32 +18,32 @@ def cx():
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('username', metavar='<username>')
 @click.argument('password', metavar='<password>')
 @click.argument('email', metavar='<email>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def add_user(userid: str, password: str, email: str, debug: bool):
+def add_user(username: str, password: str, email: str, debug: bool):
     """Adds user"""
     session = db_session
-    new_user = User(userid=userid, password=password, email=email)
+    new_user = User(username=username, password=password, email=email)
     session.add(new_user)
     session.commit()
 
 
 @cx.command()
-@click.argument('src_userid', metavar='<src_userid>')
-@click.argument('target_userid', metavar='<target_userid>')
+@click.argument('src_username', metavar='<src_username>')
+@click.argument('target_username', metavar='<target_username>')
 @click.argument('password', metavar='<password>')
 @click.argument('email', metavar='<email>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def clone_user(src_userid: str, target_userid: str, password: str, email: str, debug: bool):
+def clone_user(src_username: str, target_username: str, password: str, email: str, debug: bool):
     """Clones user"""
 
-    src_user = find_user_by_userid(src_userid)
+    src_user = find_user_by_username(src_username)
 
     session = db_session
 
-    new_user = User(userid=target_userid, password=password, email=email)
+    new_user = User(username=target_username, password=password, email=email)
     session.add(new_user)
     session.commit()
 
@@ -61,12 +61,12 @@ def clone_user(src_userid: str, target_userid: str, password: str, email: str, d
 
 
 @cx.command()
-@click.argument('src_userid', metavar='<src_userid>')
+@click.argument('src_username', metavar='<src_username>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def delete_user(src_userid: str, debug: bool):
+def delete_user(src_username: str, debug: bool):
     """Clones user"""
 
-    user = find_user_by_userid(src_userid)
+    user = find_user_by_username(src_username)
     session = db_session
 
     user_runtime_installs = find_user_runtime_installs_by_user_id(user.id)
@@ -85,13 +85,13 @@ def delete_user(src_userid: str, debug: bool):
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('username', metavar='<username>')
 @click.argument('repo', metavar='<repo>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def add_user_repo(userid: str, repo: str, debug: bool):
+def add_user_repo(username: str, repo: str, debug: bool):
     """add repo to user's list of repos"""
 
-    user = find_user_by_userid(userid)
+    user = find_user_by_username(username)
     session = db_session
     user_repo = UserRepo(uri=repo, user_id=user.id)
     session.add(user_repo)
@@ -115,13 +115,13 @@ def add_runtime_install(name: str, debug: bool):
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('username', metavar='<username>')
 @click.argument('runtime_install_name', metavar='<runtime_install_name>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def add_user_runtime_install(userid: str, runtime_install_name: str, debug: bool):
+def add_user_runtime_install(username: str, runtime_install_name: str, debug: bool):
     """add runtime install to user's list of runtime installs"""
 
-    user = find_user_by_userid(userid)
+    user = find_user_by_username(username)
     runtime_install = find_runtime_install_by_name(runtime_install_name)
     session = db_session
     user_runtime_install = UserRuntimeInstall(user_id=user.id, runtime_install_id=runtime_install.id)
@@ -130,13 +130,13 @@ def add_user_runtime_install(userid: str, runtime_install_name: str, debug: bool
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('username', metavar='<username>')
 @click.argument('ide_name', metavar='<ide_name>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def add_user_ide(userid: str, ide_name: str, debug: bool):
+def add_user_ide(username: str, ide_name: str, debug: bool):
     """add runtime install to user's list of runtime installs"""
 
-    user = find_user_by_userid(userid)
+    user = find_user_by_username(username)
     ide = find_ide_by_name(ide_name)
     session = db_session
     user_ide = UserIDE(user_id=user.id, ide_id=ide.id)
@@ -145,16 +145,16 @@ def add_user_ide(userid: str, ide_name: str, debug: bool):
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('username', metavar='<username>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def user_private_key(userid: str, debug: bool):
+def user_private_key(username: str, debug: bool):
     """update user private key"""
 
     document = ""
     for line in sys.stdin:
         document += line
 
-    user = find_user_by_userid(userid)
+    user = find_user_by_username(username)
     user.private_key = document
     session = db_session
     session.add(user)
@@ -162,16 +162,16 @@ def user_private_key(userid: str, debug: bool):
 
 
 @cx.command()
-@click.argument('userid', metavar='<userid>')
+@click.argument('username', metavar='<username>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def user_public_key(userid: str, debug: bool):
+def user_public_key(username: str, debug: bool):
     """update user public key"""
 
     document = ""
     for line in sys.stdin:
         document += line
 
-    user = find_user_by_userid(userid)
+    user = find_user_by_username(username)
     user.public_key = document
     session = db_session
     session.add(user)
@@ -189,12 +189,12 @@ yaml.add_representer(str, repr_str, Dumper=yaml.SafeDumper)
 
 
 @cx.command()
-@click.argument('userid', default='', metavar='<userid>')
+@click.argument('username', default='', metavar='<username>')
 @click.argument('ide', default='', metavar='<ide>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def get_profile(userid: str, ide: str, debug: bool):
+def get_profile(username: str, ide: str, debug: bool):
     """Prints user ide build profile"""
 
-    profile = get_build_profile(ide, userid)
+    profile = get_build_profile(ide, username)
     print(yaml.safe_dump(profile))
 

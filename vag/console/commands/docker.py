@@ -249,7 +249,7 @@ def pre_build(debug: bool):
     document = ""
     # if tty
     # if sys.stdin.isatty():
-    #     document = read_file(f'./profile-{userid}.yml')
+    #     document = read_file(f'./profile-{username}.yml')
     # else: # if pipe
     for line in sys.stdin:
         document += line
@@ -258,7 +258,7 @@ def pre_build(debug: bool):
     if debug: 
         print(f'profile = {profile}')
 
-    userid = profile['userid']
+    username = profile['username']
     password = profile['password']
     email = profile['email']
 
@@ -288,13 +288,13 @@ cert: false
 	email = {{ email }}""", name=password, email=email))
 
     # ------------------------------------------------------------------
-    app_file_path = f'./{profile["ide"]}-{userid}-public.app'
+    app_file_path = f'./{profile["ide"]}-{username}-public.app'
     write_file(app_file_path, render_template("""[vscode]
 memory  = 2048
 port    = 9991
 health  = /
-host    = {{ ide }}-{{ userid }}.curiosityworks.org
-""", userid=userid, ide=profile['ide']))
+host    = {{ ide }}-{{ username }}.curiosityworks.org
+""", username=username, ide=profile['ide']))
 
     # ------------------------------------------------------------------
     if 'repositories' in profile and profile['repositories']:

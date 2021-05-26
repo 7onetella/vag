@@ -20,7 +20,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    userid = Column(String(30), nullable=False)
+    username = Column(String(30), nullable=False)
     password = Column(String(30), nullable=False)
     email = Column(String(30), nullable=False)
     private_key = Column(String(2000), nullable=True)
@@ -71,9 +71,9 @@ def query_data():
     Base.metadata.bind = engine    
     DBSession = sessionmaker(bind=engine)
     session = DBSession()    
-    userides = session.query(UserIDE).all()
-    for useride in userides:
-        print(f'{useride.ide.name}-{useride.user.userid}')
+    usernames = session.query(UserIDE).all()
+    for username in usernames:
+        print(f'{username.ide.name}-{username.user.username}')
 
     user_repos = session.query(UserRepo).all()
     for user_repo in user_repos:

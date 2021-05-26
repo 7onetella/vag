@@ -48,7 +48,7 @@ def insert_data():
 
     # ----------- user related instance tables -----------
 
-    new_user = User(userid='john', email='foo@example.com', password='12345678', private_key="""rsa key start here 
+    new_user = User(username='john', email='foo@example.com', password='12345678', private_key="""rsa key start here 
 
 
 ras key end here""", public_key='rsa public key')

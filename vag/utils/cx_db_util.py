@@ -20,8 +20,8 @@ def get_session_future():
 db_session = get_session_future()
 
 
-def find_user_by_userid(userid: str):
-    statement = select(User).filter_by(userid=userid)
+def find_user_by_username(username: str):
+    statement = select(User).filter_by(username=username)
     return db_session.execute(statement).scalars().one()
 
 
@@ -45,8 +45,8 @@ def find_ide_by_name(ide_name: str):
     return db_session.execute(statement).scalars().one()
 
 
-def get_build_profile(ide: str, userid: str) -> dict:
-    user = find_user_by_userid(userid)
+def get_build_profile(ide: str, username: str) -> dict:
+    user = find_user_by_username(username)
 
     statement = select(UserRepo).filter_by(user_id=user.id)
     repositories = db_session.execute(statement).scalars().all()
@@ -61,7 +61,7 @@ def get_build_profile(ide: str, userid: str) -> dict:
 
     return {
         'ide': ide,
-        'userid': userid,
+        'username': username,
         'password': user.password,
         'email': user.email,
         'private_key': user.private_key,
