@@ -84,7 +84,7 @@ def query_data():
         print(f'{user_runtime_install.runtime_install.name}')
 
 
-def main(): 
+def drop_create_schema(): 
     engine = create_engine(get_connection_str())
     Base.metadata.bind = engine
     Base.metadata.drop_all()
@@ -92,4 +92,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    drop_create_schema()

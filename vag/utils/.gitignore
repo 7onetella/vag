@@ -1,1 +1,2 @@
 *.db
+cx_test_data_*.py
