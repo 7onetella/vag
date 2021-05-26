@@ -8,7 +8,41 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 import yaml
 from sqlalchemy import select
-from vag.utils.cx_schema import get_connection_str, User, UserIDE, UserRepo, UserRuntimeInstall, RuntimeInstall, IDE, Base
+from vag.utils.cx_schema import *
+
+
+def get_session():
+    engine = create_engine(get_connection_str())
+    Base.metadata.bind = engine    
+    DBSession = sessionmaker(bind=engine)
+    return DBSession()
+
+
+def find_user_by_userid(userid: str):
+    engine = create_engine(get_connection_str())
+    Base.metadata.bind = engine        
+    session = Session(engine, future=True)
+    
+    statement = select(User).filter_by(userid=userid)
+    return session.execute(statement).scalars().one()
+
+
+def find_runtime_install_by_name(runtime_install_name: str):
+    engine = create_engine(get_connection_str())
+    Base.metadata.bind = engine        
+    session = Session(engine, future=True)
+    
+    statement = select(RuntimeInstall).filter_by(name=runtime_install_name)
+    return session.execute(statement).scalars().one()
+
+
+def find_ide_by_name(ide_name: str):
+    engine = create_engine(get_connection_str())
+    Base.metadata.bind = engine        
+    session = Session(engine, future=True)
+    
+    statement = select(IDE).filter_by(name=ide_name)
+    return session.execute(statement).scalars().one()
 
 
 def get_build_profile(ide: str, userid: str) -> dict:
