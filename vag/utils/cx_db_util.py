@@ -40,6 +40,11 @@ def find_user_ides_by_user_id(user_id):
     return db_session.execute(statement).scalars().all()   
 
 
+def find_user_repos_by_user_id(user_id):
+    statement = select(UserRepo).filter_by(user_id=user_id)
+    return db_session.execute(statement).scalars().all()   
+
+
 def find_ide_by_name(ide_name: str):
     statement = select(IDE).filter_by(name=ide_name)
     return db_session.execute(statement).scalars().one()

@@ -44,20 +44,30 @@ def clone_user(src_username: str, target_username: str, password: str, email: st
     session = db_session
 
     new_user = User(username=target_username, password=password, email=email)
+    print(f'creating user {new_user.username}')
     session.add(new_user)
     session.commit()
 
     user_runtime_installs = find_user_runtime_installs_by_user_id(src_user.id)
     for user_runtime_install in user_runtime_installs:
         new_user_runtime_install = UserRuntimeInstall(user_id=new_user.id, runtime_install_id=user_runtime_install.runtime_install_id)
+        print(f'copying user_runtime_install {user_runtime_install.runtime_install.name}')
         session.add(new_user_runtime_install)
         session.commit()
 
     user_ides = find_user_ides_by_user_id(src_user.id)
     for user_ide in user_ides:
         new_user_ide = UserIDE(user_id=new_user.id, ide_id=user_ide.ide_id)
+        print(f'copying user_ide {user_ide.ide.name}')
         session.add(new_user_ide)
-        session.commit()        
+        session.commit()       
+
+    user_repos = find_user_repos_by_user_id(src_user.id)        
+    for user_repo in user_repos:
+        new_user_repo = UserRepo(user_id=new_user.id, uri=user_repo.uri)
+        print(f'copying user_repo {user_repo.uri}')
+        session.add(new_user_repo)
+        session.commit()
 
 
 @cx.command()
@@ -71,15 +81,24 @@ def delete_user(src_username: str, debug: bool):
 
     user_runtime_installs = find_user_runtime_installs_by_user_id(user.id)
     for user_runtime_install in user_runtime_installs:
+        print(f'deleting user_runtime_install {user_runtime_install.runtime_install.name}')
         session.delete(user_runtime_install)
         session.commit()        
 
     user_ides = find_user_ides_by_user_id(user.id)
     for user_ide in user_ides:
+        print(f'deleting user_ide {user_ide.ide.name}')
         session.delete(user_ide)
         session.commit()            
 
+    user_repos = find_user_repos_by_user_id(user.id)        
+    for user_repo in user_repos:
+        print(f'deleting user_repo {user_repo.uri}')
+        session.delete(user_repo)
+        session.commit()
+
     session = db_session
+    print(f'deleting user {user.username}')
     session.delete(user)
     session.commit()
 
