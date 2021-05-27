@@ -18,8 +18,10 @@ vag cx add-user-repo baz git@example.com/baz/project
 
 vag cx add-user-ide baz vscode
 
+# runtime installs are created in reset-test-data
 vag cx add-ide-runtime-install baz vscode tmux
 
+# copy URIs from user's repos
 vag cx add-ide-repo baz vscode git@example.com/baz/project
 
 cat ~/.ssh/id_rsa | vag cx user-private-key baz
