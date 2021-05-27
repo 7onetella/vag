@@ -64,10 +64,9 @@ def find_ide_by_name(ide_name: str):
 def get_build_profile(username: str, ide_name: str) -> dict:
     user = find_user_by_username(username)
 
-    statement = select(UserRepo).filter_by(user_id=user.id)
-    repositories = db_session.execute(statement).scalars().all()
-
     user_ide = find_user_ide_by_user_id_ide_name(user.id, ide_name)
+
+    ide_repos = find_ide_repos_by_user_ide_id(user_ide.id)
 
     statement = select(IDERuntimeInstall).filter_by(user_ide=user_ide)
     user_ide_runtime_installs = db_session.execute(statement).scalars().all()
@@ -84,7 +83,7 @@ def get_build_profile(username: str, ide_name: str) -> dict:
         'email': user.email,
         'private_key': user.private_key,
         'public_key': user.public_key,
-        'repositories': [repo.uri for repo in repositories],
+        'repositories': [repo.uri for repo in ide_repos],
         'snippets': snppiets
     }
 
