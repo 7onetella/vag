@@ -9,6 +9,7 @@ from vag.utils import config
 from vag.utils.misc import create_ssh
 from vag.utils.cx_schema import *
 from vag.utils.cx_db_util import *
+from vag.utils.cx_test_data import *
 import yaml
 
 @click.group()
@@ -219,3 +220,11 @@ def get_profile(username: str, ide: str, debug: bool):
     profile = get_build_profile(username, ide)
     print(yaml.safe_dump(profile))
 
+
+@cx.command()
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def reset_test_data(debug: bool):
+    """Resets test data"""
+
+    print('resetting test data')
+    reset_test_data_foo()

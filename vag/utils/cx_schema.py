@@ -44,7 +44,7 @@ class UserRepo(Base):
 class RuntimeInstall(Base):
     __tablename__ = 'runtime_install'
     id = Column(Integer, primary_key=True)
-    name = Column(String(30))
+    name = Column(String(30), unique=True)
     script_body = Column(String(4000))
 
 
