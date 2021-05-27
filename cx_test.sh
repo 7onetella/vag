@@ -28,4 +28,8 @@ echo -n "baz user public key" | vag cx user-public-key baz
 
 vag cx get-profile baz vscode
 
+vag cx get-profile baz vscode | vag docker pre-build 
+
+vag docker post-build vscode-baz-public
+
 vag cx delete-user baz
