@@ -48,19 +48,19 @@ def clone_user(src_username: str, target_username: str, password: str, email: st
     session.add(new_user)
     session.commit()
 
-    user_runtime_installs = find_user_runtime_installs_by_user_id(src_user.id)
-    for user_runtime_install in user_runtime_installs:
-        new_user_runtime_install = UserRuntimeInstall(user_id=new_user.id, runtime_install_id=user_runtime_install.runtime_install_id)
-        print(f'copying user_runtime_install {user_runtime_install.runtime_install.name}')
-        session.add(new_user_runtime_install)
-        session.commit()
-
     user_ides = find_user_ides_by_user_id(src_user.id)
     for user_ide in user_ides:
         new_user_ide = UserIDE(user_id=new_user.id, ide_id=user_ide.ide_id)
         print(f'copying user_ide {user_ide.ide.name}')
         session.add(new_user_ide)
         session.commit()       
+
+    ide_runtime_installs = find_ide_runtime_installs_by_user_id(src_user.id)
+    for ide_runtime_install in ide_runtime_installs:
+        new_ide_runtime_install = IdeRuntimeInstall(user_ide_id=new_user.id, runtime_install_id=ide_runtime_install.runtime_install_id)
+        print(f'copying ide_runtime_install {ide_runtime_install.runtime_install.name}')
+        session.add(new_ide_runtime_install)
+        session.commit()
 
     user_repos = find_user_repos_by_user_id(src_user.id)        
     for user_repo in user_repos:
@@ -143,7 +143,7 @@ def add_user_runtime_install(username: str, runtime_install_name: str, debug: bo
     user = find_user_by_username(username)
     runtime_install = find_runtime_install_by_name(runtime_install_name)
     session = db_session
-    user_runtime_install = UserRuntimeInstall(user_id=user.id, runtime_install_id=runtime_install.id)
+    user_runtime_install = IdeRuntimeInstall(user_id=user.id, runtime_install_id=runtime_install.id)
     session.add(user_runtime_install)
     session.commit()
 
@@ -214,6 +214,6 @@ yaml.add_representer(str, repr_str, Dumper=yaml.SafeDumper)
 def get_profile(username: str, ide: str, debug: bool):
     """Prints user ide build profile"""
 
-    profile = get_build_profile(ide, username)
+    profile = get_build_profile(username, ide)
     print(yaml.safe_dump(profile))
 

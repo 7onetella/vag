@@ -48,15 +48,6 @@ class RuntimeInstall(Base):
     script_body = Column(String(4000))
 
 
-class UserRuntimeInstall(Base):
-    __tablename__ = 'user_runtime_install'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    runtime_install_id = Column(Integer, ForeignKey('runtime_install.id'))
-    user = relationship(User)
-    runtime_install = relationship(RuntimeInstall)
-
-
 class UserIDE(Base):
     __tablename__ = 'user_ide'
     id = Column(Integer, primary_key=True)
@@ -64,6 +55,15 @@ class UserIDE(Base):
     ide_id = Column(Integer, ForeignKey('ide.id'))
     user = relationship(User)
     ide = relationship(IDE)
+
+
+class IdeRuntimeInstall(Base):
+    __tablename__ = 'ide_runtime_install'
+    id = Column(Integer, primary_key=True)
+    user_ide_id = Column(Integer, ForeignKey('user_ide.id'))
+    runtime_install_id = Column(Integer, ForeignKey('runtime_install.id'))
+    user_ide = relationship(UserIDE)
+    runtime_install = relationship(RuntimeInstall)
 
 
 def query_data():
@@ -79,7 +79,7 @@ def query_data():
     for user_repo in user_repos:
         print(f'{user_repo.uri}')
 
-    user_runtime_installs = session.query(UserRuntimeInstall).all()
+    user_runtime_installs = session.query(IdeRuntimeInstall).all()
     for user_runtime_install in user_runtime_installs:
         print(f'{user_runtime_install.runtime_install.name}')
 

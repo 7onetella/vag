@@ -30,15 +30,23 @@ def find_runtime_install_by_name(runtime_install_name: str):
     return db_session.execute(statement).scalars().one()
 
 
-def find_user_runtime_installs_by_user_id(user_id):
-    statement = select(UserRuntimeInstall).filter_by(user_id=user_id)
+def find_ide_runtime_installs_by_user_id(user_ide_id):
+    statement = select(IdeRuntimeInstall).filter_by(user_ide_id=user_ide_id)
     return db_session.execute(statement).scalars().all()   
 
 
 def find_user_ides_by_user_id(user_id):
+    print(f'user_id = {user_id}')
     statement = select(UserIDE).filter_by(user_id=user_id)
     return db_session.execute(statement).scalars().all()   
 
+
+def find_user_ide_by_user_id_ide_name(user_id, ide_name: str):
+    user_ides = find_user_ides_by_user_id(user_id)
+    for user_ide in user_ides:
+        print(f'{user_ide.ide.name} == {ide_name}')
+        if user_ide.ide.name == ide_name:
+            return user_ide
 
 def find_user_repos_by_user_id(user_id):
     statement = select(UserRepo).filter_by(user_id=user_id)
@@ -50,22 +58,23 @@ def find_ide_by_name(ide_name: str):
     return db_session.execute(statement).scalars().one()
 
 
-def get_build_profile(ide: str, username: str) -> dict:
+def get_build_profile(username: str, ide_name: str) -> dict:
     user = find_user_by_username(username)
 
     statement = select(UserRepo).filter_by(user_id=user.id)
     repositories = db_session.execute(statement).scalars().all()
 
-    statement = select(UserRuntimeInstall).filter_by(user_id=user.id)
-    user_runtime_installs = db_session.execute(statement).scalars().all()
+    user_ide = find_user_ide_by_user_id_ide_name(user.id, ide_name)
+    statement = select(IdeRuntimeInstall).filter_by(user_ide_id=user_ide.id)
+    user_ide_runtime_installs = db_session.execute(statement).scalars().all()
 
-    bodies = [ u_r_i.runtime_install.script_body for u_r_i in user_runtime_installs ]
+    bodies = [ u_r_i.runtime_install.script_body for u_r_i in user_ide_runtime_installs ]
     snppiets = []
     for body in bodies:
         snppiets.append({'body': body})
 
     return {
-        'ide': ide,
+        'ide': ide_name,
         'username': username,
         'password': user.password,
         'email': user.email,
