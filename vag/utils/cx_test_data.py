@@ -76,6 +76,8 @@ sudo apt-get install -y libpq-dev
     session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=ember_install))
     session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=tmux_install))
     session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=gh_cli_install))
+    session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=poetry_install))
+    session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=postgresql_install))
     session.commit()
 
     containers_repo = UserRepo(uri='git@github.com:7onetella/containers.git', user=new_user)

@@ -47,28 +47,30 @@ def clone_user(src_username: str, target_username: str, password: str, email: st
     new_user = User(username=target_username, password=password, email=email)
     print(f'creating user {new_user.username}')
     session.add(new_user)
-    session.commit()
+
+    src_user_repos = find_user_repos_by_user_id(src_user.id)
+    for src_user_repo in src_user_repos:
+        session.add(UserRepo(user=new_user, uri=src_user_repo.uri))
 
     src_user_ides = find_user_ides_by_user_id(src_user.id)
     for src_user_ide in src_user_ides:
         new_user_ide = UserIDE(user=new_user, ide=src_user_ide.ide)
         print(f'copying user_ide {src_user_ide.ide.name}')
         session.add(new_user_ide)
-        session.commit()       
 
         src_ide_repos = find_ide_repos_by_user_ide_id(src_user_ide.id)
         for src_ide_repo in src_ide_repos:
             new_ide_repo = IDERepo(user_ide=new_user_ide, uri=src_ide_repo.uri)
-            print(f'copying user_repo {src_ide_repo.uri}')
+            print(f'copying   ide_repo {src_ide_repo.uri}')
             session.add(new_ide_repo)
-            session.commit()
 
         src_ide_runtime_installs = find_ide_runtime_installs_by_user_id(src_user_ide.id)
         for src_ide_runtime_install in src_ide_runtime_installs:
             new_ide_runtime_install = IDERuntimeInstall(user_ide_id=new_user_ide.id, runtime_install=src_ide_runtime_install.runtime_install)
-            print(f'copying ide_runtime_install {src_ide_runtime_install.runtime_install.name}')
+            print(f'copying   ide_runtime_install {src_ide_runtime_install.runtime_install.name}')
             session.add(new_ide_runtime_install)
-            session.commit()
+
+    session.commit()
 
 
 
@@ -86,19 +88,21 @@ def delete_user(src_username: str, debug: bool):
 
         ide_runtime_installs = find_ide_runtime_installs_by_user_id(ui.id)
         for i in ide_runtime_installs:
-            print(f'deleting user_runtime_install {i.runtime_install.name}')
+            print(f'deleting   ide_runtime_install {i.runtime_install.name}')
             session.delete(i)
-            session.commit()        
 
         ide_repos = find_ide_repos_by_user_ide_id(ui.id)        
         for ir in ide_repos:
-            print(f'deleting ide_repo {ir.uri}')
+            print(f'deleting   ide_repo {ir.uri}')
             session.delete(ir)
-            session.commit()
 
         print(f'deleting user_ide {ui.ide.name}')
         session.delete(ui)
-        session.commit()            
+
+    user_repos = find_user_repos_by_user_id(user.id)    
+    for user_repo in user_repos:
+        print(f'deleting user_repo {user_repo.uri}')
+        session.delete(user_repo)
 
     session = db_session
     print(f'deleting user {user.username}')
