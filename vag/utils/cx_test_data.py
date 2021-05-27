@@ -70,10 +70,10 @@ ras key end here""", public_key='rsa public key')
     session.add(UserRepo(uri='baz.git', user=new_user))
     session.commit()
 
-    session.add(IdeRuntimeInstall(user_ide=user_ide_vscode, runtime_install=ember_install))
-    session.add(IdeRuntimeInstall(user_ide=user_ide_intellij, runtime_install=tmux_install))
-    session.add(IdeRuntimeInstall(user_ide=user_ide_pycharm, runtime_install=gh_cli_install))
-    session.add(IdeRuntimeInstall(user_ide=user_ide_goland, runtime_install=gh_cli_install))
+    session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=ember_install))
+    session.add(IDERuntimeInstall(user_ide=user_ide_intellij, runtime_install=tmux_install))
+    session.add(IDERuntimeInstall(user_ide=user_ide_pycharm, runtime_install=gh_cli_install))
+    session.add(IDERuntimeInstall(user_ide=user_ide_goland, runtime_install=gh_cli_install))
     session.commit()
 
 

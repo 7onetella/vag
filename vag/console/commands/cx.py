@@ -50,24 +50,26 @@ def clone_user(src_username: str, target_username: str, password: str, email: st
 
     user_ides = find_user_ides_by_user_id(src_user.id)
     for user_ide in user_ides:
-        new_user_ide = UserIDE(user_id=new_user.id, ide_id=user_ide.ide_id)
+        new_user_ide = UserIDE(user=new_user, ide=user_ide.ide)
         print(f'copying user_ide {user_ide.ide.name}')
         session.add(new_user_ide)
         session.commit()       
 
+        ide_repos = find_ide_repos_by_user_ide_id(user_ide.ide_id)
+        for ir in ide_repos:
+            new_ide_repo = IDERepo(user_ide=new_user_ide, uri=ir.uri)
+            print(f'copying user_repo {ir.uri}')
+            session.add(new_ide_repo)
+            session.commit()
+
+
     ide_runtime_installs = find_ide_runtime_installs_by_user_id(src_user.id)
     for ide_runtime_install in ide_runtime_installs:
-        new_ide_runtime_install = IdeRuntimeInstall(user_ide_id=new_user.id, runtime_install_id=ide_runtime_install.runtime_install_id)
+        new_ide_runtime_install = IDERuntimeInstall(user_ide_id=new_user.id, runtime_install_id=ide_runtime_install.runtime_install_id)
         print(f'copying ide_runtime_install {ide_runtime_install.runtime_install.name}')
         session.add(new_ide_runtime_install)
         session.commit()
 
-    user_repos = find_user_repos_by_user_id(src_user.id)        
-    for user_repo in user_repos:
-        new_user_repo = UserRepo(user_id=new_user.id, uri=user_repo.uri)
-        print(f'copying user_repo {user_repo.uri}')
-        session.add(new_user_repo)
-        session.commit()
 
 
 @cx.command()
@@ -79,23 +81,24 @@ def delete_user(src_username: str, debug: bool):
     user = find_user_by_username(src_username)
     session = db_session
 
-    user_runtime_installs = find_user_runtime_installs_by_user_id(user.id)
-    for user_runtime_install in user_runtime_installs:
-        print(f'deleting user_runtime_install {user_runtime_install.runtime_install.name}')
-        session.delete(user_runtime_install)
+    ide_runtime_installs = find_ide_runtime_installs_by_user_id(user.id)
+    for i in ide_runtime_installs:
+        print(f'deleting user_runtime_install {i.runtime_install.name}')
+        session.delete(i)
         session.commit()        
 
     user_ides = find_user_ides_by_user_id(user.id)
-    for user_ide in user_ides:
-        print(f'deleting user_ide {user_ide.ide.name}')
-        session.delete(user_ide)
-        session.commit()            
+    for ui in user_ides:
 
-    user_repos = find_user_repos_by_user_id(user.id)        
-    for user_repo in user_repos:
-        print(f'deleting user_repo {user_repo.uri}')
-        session.delete(user_repo)
-        session.commit()
+        ide_repos = find_ide_repos_by_user_ide_id(ui.id)        
+        for ir in ide_repos:
+            print(f'deleting ide_repo {ir.uri}')
+            session.delete(ir)
+            session.commit()
+
+        print(f'deleting user_ide {ui.ide.name}')
+        session.delete(ui)
+        session.commit()            
 
     session = db_session
     print(f'deleting user {user.username}')
@@ -143,7 +146,7 @@ def add_user_runtime_install(username: str, runtime_install_name: str, debug: bo
     user = find_user_by_username(username)
     runtime_install = find_runtime_install_by_name(runtime_install_name)
     session = db_session
-    user_runtime_install = IdeRuntimeInstall(user_id=user.id, runtime_install_id=runtime_install.id)
+    user_runtime_install = IDERuntimeInstall(user_id=user.id, runtime_install_id=runtime_install.id)
     session.add(user_runtime_install)
     session.commit()
 
@@ -208,8 +211,8 @@ yaml.add_representer(str, repr_str, Dumper=yaml.SafeDumper)
 
 
 @cx.command()
-@click.argument('username', default='', metavar='<username>')
-@click.argument('ide', default='', metavar='<ide>')
+@click.argument('username', metavar='<username>')
+@click.argument('ide', metavar='<ide>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def get_profile(username: str, ide: str, debug: bool):
     """Prints user ide build profile"""
