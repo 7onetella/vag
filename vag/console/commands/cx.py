@@ -50,6 +50,7 @@ def clone_user(src_username: str, target_username: str, password: str, email: st
 
     src_user_repos = find_user_repos_by_user_id(src_user.id)
     for src_user_repo in src_user_repos:
+        print(f'copying user_repo {src_user_repo.uri}')
         session.add(UserRepo(user=new_user, uri=src_user_repo.uri))
 
     src_user_ides = find_user_ides_by_user_id(src_user.id)
