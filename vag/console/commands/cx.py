@@ -143,16 +143,35 @@ def add_runtime_install(name: str, debug: bool):
 
 @cx.command()
 @click.argument('username', metavar='<username>')
+@click.argument('ide_name', metavar='<ide_name>')
 @click.argument('runtime_install_name', metavar='<runtime_install_name>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def add_user_runtime_install(username: str, runtime_install_name: str, debug: bool):
+def add_ide_runtime_install(username: str, ide_name: str, runtime_install_name: str, debug: bool):
     """add runtime install to user's list of runtime installs"""
 
     user = find_user_by_username(username)
+    user_ide = find_user_ide_by_user_id_ide_name(user.id, ide_name)
     runtime_install = find_runtime_install_by_name(runtime_install_name)
+
     session = db_session
-    user_runtime_install = IDERuntimeInstall(user_id=user.id, runtime_install_id=runtime_install.id)
+    user_runtime_install = IDERuntimeInstall(user_ide_id=user_ide.id, runtime_install_id=runtime_install.id)
     session.add(user_runtime_install)
+    session.commit()
+
+
+@cx.command()
+@click.argument('username', metavar='<username>')
+@click.argument('ide_name', metavar='<ide_name>')
+@click.argument('repo', metavar='<repo>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def add_ide_repo(username: str, ide_name: str, repo: str, debug: bool):
+    """add repo to user's list of repos"""
+
+    user = find_user_by_username(username)
+    session = db_session
+    user_ide = find_user_ide_by_user_id_ide_name(user.id, ide_name)
+    ide_repo = IDERepo(uri=repo, user_ide_id=user_ide.id)
+    session.add(ide_repo)
     session.commit()
 
 
