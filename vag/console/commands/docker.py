@@ -269,9 +269,10 @@ def pre_build(debug: bool):
         except OSError:
             # do nothing
             pass
-        write_file('./.ssh/id_rsa', profile['private_key'])
-        st = os.stat('./.ssh/id_rsa')
-        os.chmod('./.ssh/id_rsa', stat.S_IRUSR | stat.S_IWUSR)
+        if profile['private_key']:
+            write_file('./.ssh/id_rsa', profile['private_key'])
+            st = os.stat('./.ssh/id_rsa')
+            os.chmod('./.ssh/id_rsa', stat.S_IRUSR | stat.S_IWUSR)
 
     # ------------------------------------------------------------------
     write_file('./config.yml', render_template("""bind-addr: 0.0.0.0:9991
