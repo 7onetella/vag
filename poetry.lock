@@ -44,6 +44,20 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "giteapy"
+version = "1.0.8"
+description = "Python SDK for Gitea - A painless, self-hosted Git service"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+python-dateutil = ">=2.1"
+six = ">=1.10"
+urllib3 = ">=1.23"
+
+[[package]]
 name = "greenlet"
 version = "1.1.0"
 description = "Lightweight in-process concurrent programming"
@@ -153,6 +167,17 @@ mccabe = ">=0.6,<0.7"
 toml = ">=0.7.1"
 
 [[package]]
+name = "python-dateutil"
+version = "2.8.1"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
 name = "pyyaml"
 version = "5.4.1"
 description = "YAML parser and emitter for Python"
@@ -177,6 +202,14 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "sqlalchemy"
@@ -278,7 +311,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "d0a2f7749578782ede9cbf5e7edb8d92a421f10cf503195b013aa1b5c085bace"
+content-hash = "abc082e299dfc0c2fce9d1be59082a4683a82df44089069c98d0804e6768cfb3"
 
 [metadata.files]
 astroid = [
@@ -300,6 +333,9 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+giteapy = [
+    {file = "giteapy-1.0.8.tar.gz", hash = "sha256:2078c802a4626bf311e911c969c34b7d19fbe9175e2910e1965b24ff69221470"},
 ]
 greenlet = [
     {file = "greenlet-1.1.0-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:60848099b76467ef09b62b0f4512e7e6f0a2c977357a036de602b653667f5f4c"},
@@ -453,6 +489,10 @@ pylint = [
     {file = "pylint-2.8.2-py3-none-any.whl", hash = "sha256:f7e2072654a6b6afdf5e2fb38147d3e2d2d43c89f648637baab63e026481279b"},
     {file = "pylint-2.8.2.tar.gz", hash = "sha256:586d8fa9b1891f4b725f587ef267abe2a1bad89d6b184520c7f07a253dd6e217"},
 ]
+python-dateutil = [
+    {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
+    {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
+]
 pyyaml = [
     {file = "PyYAML-5.4.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3b2b1824fe7112845700f815ff6a489360226a5609b96ec2190a45e62a9fc922"},
     {file = "PyYAML-5.4.1-cp27-cp27m-win32.whl", hash = "sha256:129def1b7c1bf22faffd67b8f3724645203b79d8f4cc81f674654d9902cb4393"},
@@ -487,6 +527,10 @@ pyyaml = [
 requests = [
     {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
     {file = "requests-2.25.1.tar.gz", hash = "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804"},
+]
+six = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 sqlalchemy = [
     {file = "SQLAlchemy-1.4.15-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:22141a05d0f60df57ae334b589dbd081213c257a80d448ff499a3b6efd1998d3"},

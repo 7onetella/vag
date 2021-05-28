@@ -16,6 +16,7 @@ pyyaml = "^5.4.1"
 sqlalchemy = "^1.4.15"
 psycopg2 = "^2.8.6"
 pylint = "^2.8.2"
+giteapy = "^1.0.8"
 
 [tool.poetry.scripts]
 vag = "vag.console.application:main"

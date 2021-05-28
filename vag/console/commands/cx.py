@@ -10,6 +10,7 @@ from vag.utils.misc import create_ssh
 from vag.utils.cx_schema import *
 from vag.utils.cx_db_util import *
 from vag.utils.cx_test_data import *
+import vag.utils.gitea_api_util as gitutil
 import yaml
 
 @click.group()
@@ -29,6 +30,17 @@ def add_user(username: str, password: str, email: str, debug: bool):
     new_user = User(username=username, password=password, email=email)
     session.add(new_user)
     session.commit()
+
+
+@cx.command()
+@click.argument('username', metavar='<username>')
+@click.argument('password', metavar='<password>')
+@click.argument('email', metavar='<email>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def add_git_user(username: str, password: str, email: str, debug: bool):
+    """Adds git user"""
+    
+    gitutil.create_user(email, password, username)
 
 
 @cx.command()
