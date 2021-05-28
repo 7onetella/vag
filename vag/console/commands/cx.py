@@ -57,7 +57,7 @@ def delete_git_user(username: str, debug: bool):
 @click.argument('repo_name', metavar='<repo_name>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def create_git_user_repo(username: str, repo_name: str, debug: bool):
-    """Deletes git user"""
+    """Creates git user repo"""
     
     gitutil.create_user_repo(username, repo_name)
 
@@ -66,7 +66,7 @@ def create_git_user_repo(username: str, repo_name: str, debug: bool):
 @click.argument('username', metavar='<username>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def create_git_user_public_key(username: str, debug: bool):
-    """Deletes git user"""
+    """Creates git user public key"""
     
     document = ""
     for line in sys.stdin:

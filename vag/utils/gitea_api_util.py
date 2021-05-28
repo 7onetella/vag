@@ -15,7 +15,7 @@ def get_api_instance() -> giteapy.AdminApi:
 
 def create_user(email: str, password: str, username: str):
     api_instance = get_api_instance()
-    body = giteapy.CreateUserOption(email = email, password = password, username = username)
+    body = giteapy.CreateUserOption(email = email, password = password, username = username, must_change_password=False)
     try:
         # Create a user
         api_response = api_instance.admin_create_user(body=body)
