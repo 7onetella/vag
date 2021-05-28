@@ -36,7 +36,7 @@ class IDE(Base):
 class UserRepo(Base):
     __tablename__ = 'user_repo'
     id = Column(Integer, primary_key=True)
-    uri = Column(String(50))
+    uri = Column(String(100))
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -71,7 +71,7 @@ class IDERepo(Base):
     id = Column(Integer, primary_key=True)
     user_ide_id = Column(Integer, ForeignKey('user_ide.id'))
     user_ide = relationship(UserIDE)
-    uri = Column(String(50))
+    uri = Column(String(100))
 
 
 def query_data():
