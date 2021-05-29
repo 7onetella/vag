@@ -90,12 +90,12 @@ def delete_user(src_username: str, debug: bool):
 
         ide_runtime_installs = find_ide_runtime_installs_by_user_id(ui.id)
         for i in ide_runtime_installs:
-            print(f'deleting   ide_runtime_install {i.runtime_install.name}')
+            print(f'deleting ide_runtime_install {i.runtime_install.name}')
             session.delete(i)
 
         ide_repos = find_ide_repos_by_user_ide_id(ui.id)        
         for ir in ide_repos:
-            print(f'deleting   ide_repo {ir.uri}')
+            print(f'deleting ide_repo {ir.uri}')
             session.delete(ir)
 
         print(f'deleting user_ide {ui.ide.name}')

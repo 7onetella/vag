@@ -32,8 +32,7 @@ def create_user(username: str, password: str, email: str):
     body = giteapy.CreateUserOption(email = email, password = password, username = username, must_change_password=False)
     try:
         # Create a user
-        api_response = api_instance.admin_create_user(body=body)
-        pprint(api_response)
+        return api_instance.admin_create_user(body=body)
     except ApiException as e:
         print("Exception when calling AdminApi->admin_create_user: %s\n" % e)
 
@@ -42,8 +41,7 @@ def delete_user(username: str, debug: bool=False):
     api_instance = get_api_instance()
     try:
         # Create a user
-        api_response = api_instance.admin_delete_user(username)
-        pprint(api_response)
+        return api_instance.admin_delete_user(username)
     except ApiException as e:
         if debug:
             print("Exception when calling AdminApi->admin_create_user: %s\n" % e)        
@@ -69,9 +67,7 @@ def delete_user_repo(username: str, repo_name: str, debug: bool=False):
     api_instance = get_repository_api_instance()
 
     try:
-        # Create a user
-        api_response = api_instance.repo_delete(username, repo_name)
-        pprint(api_response)
+        return api_instance.repo_delete(username, repo_name)
     except ApiException as e:
         if debug:
             print("Exception when calling create_user_repo: %s\n" % e)                
@@ -82,10 +78,7 @@ def list_user_repos(username: str):
     api_instance = get_user_api_instance()
 
     try:
-        # Create a user
-        api_response = api_instance.user_current_list_repos(async_req=False)
-        # pprint(api_response)
-        return api_response
+        return api_instance.user_current_list_repos(async_req=False)
     except ApiException as e:
         print("Exception when calling AdminApi->admin_create_user: %s\n" % e)                
 
@@ -96,7 +89,6 @@ def create_public_key(username: str, key_body: str):
 
     try:
         # Create a user
-        api_response = api_instance.admin_create_public_key(username, key=key)
-        pprint(api_response)
+        return api_instance.admin_create_public_key(username, key=key)
     except ApiException as e:
         print("Exception when calling AdminApi->admin_create_user: %s\n" % e)                        
