@@ -33,49 +33,6 @@ def add_user(username: str, password: str, email: str, debug: bool):
 
 
 @cx.command()
-@click.argument('username', metavar='<username>')
-@click.argument('password', metavar='<password>')
-@click.argument('email', metavar='<email>')
-@click.option('--debug', is_flag=True, default=False, help='debug this command')
-def add_git_user(username: str, password: str, email: str, debug: bool):
-    """Adds git user"""
-    
-    gitutil.create_user(email, password, username)
-
-
-@cx.command()
-@click.argument('username', metavar='<username>')
-@click.option('--debug', is_flag=True, default=False, help='debug this command')
-def delete_git_user(username: str, debug: bool):
-    """Deletes git user"""
-    
-    gitutil.delete_user(username)
-
-
-@cx.command()
-@click.argument('username', metavar='<username>')
-@click.argument('repo_name', metavar='<repo_name>')
-@click.option('--debug', is_flag=True, default=False, help='debug this command')
-def create_git_user_repo(username: str, repo_name: str, debug: bool):
-    """Creates git user repo"""
-    
-    gitutil.create_user_repo(username, repo_name)
-
-
-@cx.command()
-@click.argument('username', metavar='<username>')
-@click.option('--debug', is_flag=True, default=False, help='debug this command')
-def create_git_user_public_key(username: str, debug: bool):
-    """Creates git user public key"""
-    
-    document = ""
-    for line in sys.stdin:
-        document += line
-
-    gitutil.create_public_key(username, document)
-
-
-@cx.command()
 @click.argument('src_username', metavar='<src_username>')
 @click.argument('target_username', metavar='<target_username>')
 @click.argument('password', metavar='<password>')
