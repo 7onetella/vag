@@ -285,8 +285,8 @@ cert: false
     write_file('./.gitconfig', render_template("""[credential]
         helper = store
 [user]
-	name = {{ name }}
-	email = {{ email }}""", name=name, email=email))
+	name = {{ username }}
+	email = {{ email }}""", username=username, email=email))
 
     # ------------------------------------------------------------------
     app_file_path = f'./{profile["ide"]}-{username}-public.app'
