@@ -315,6 +315,18 @@ set -x
 {% endfor %}# snippets end here""", snippets=snippets))
         st = os.stat('./runtime_install.sh')
         os.chmod('./runtime_install.sh', st.st_mode | stat.S_IEXEC)
+    # ------------------------------------------------------------------
+    if True:
+        write_file('./gotty.sh', render_template("""#!/bin/sh
+    
+#!/bin/sh
+
+export TERM=xterm
+
+gotty --ws-origin "vscode-{{ username }}.curiosityworks.org" -p 2222 -c {{ username }}:{{ password }} -w /usr/bin/zsh >>/dev/null 2>&1 
+""", username=username, password=password))
+        st = os.stat('./gotty.sh')
+        os.chmod('./gotty.sh', st.st_mode | stat.S_IEXEC)
 
 
 @docker.command()
@@ -334,6 +346,8 @@ def post_build(service: str, debug: bool):
     delete_file('./repositories.txt')
 
     delete_file('./runtime_install.sh')
+
+    delete_file('./gotty.sh')
 
 
 def get(data: dict, key: str, default_value):
