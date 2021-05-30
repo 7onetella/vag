@@ -11,7 +11,7 @@ from sqlalchemy import select
 
 
 def get_connection_str():
-    return 'postgresql://cxuser:cxdev114@tmt-vm11.7onetella.net:5432/devdb'
+    return os.getenv('CX_DB_CONN')
 
 
 Base = declarative_base()

@@ -58,7 +58,7 @@ sudo apt-get install -y libpq-dev
 
     # ----------- user related instance tables -----------
 
-    new_user = User(username='foo', email='7onetella@gmail.com', password='teachmecoding', private_key="""-----BEGIN RSA PRIVATE KEY-----
+    new_user = User(username='7onetella', email='7onetella@gmail.com', password='teachmecoding', private_key="""-----BEGIN RSA PRIVATE KEY-----
 -----END RSA PRIVATE KEY-----""", public_key='rsa public key')
     session.add(new_user)
     session.commit()
