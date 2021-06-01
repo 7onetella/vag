@@ -63,7 +63,7 @@ def delete_user(username: str, debug: bool=False):
         return api_instance.admin_delete_user(username)
     except ApiException as e:
         if debug:
-            print("Exception when calling AdminApi->admin_create_user: %s\n" % e)        
+            print("admin_delete_user: %s\n" % e)        
         print("deleting user failed")
     except Exception as e:
         print("deleting user failed")

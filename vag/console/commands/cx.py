@@ -15,7 +15,7 @@ from vag.utils.cx_test_data import *
 import vag.utils.gitea_api_util as gitutil
 import yaml
 from psycopg2.errors import *
-from sqlalchemy.exc import IntegrityError 
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
 
 @click.group()
@@ -42,12 +42,17 @@ def add_user(username: str, password: str, email: str, debug: bool):
 
 
 @cx.command()
-@click.argument('src_username', metavar='<src_username>')
+@click.argument('username', metavar='<username>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
-def delete_user(src_username: str, debug: bool):
+def delete_user(username: str, debug: bool):
     """Clones user"""
 
-    user = find_user_by_username(src_username)
+    try:
+        user = find_user_by_username(username)
+    except NoResultFound:
+        print(f'there is no user with name {username}')
+        sys.exit(1)
+
     session = get_session()
 
     user_ides = find_user_ides_by_user_id(user.id)

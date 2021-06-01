@@ -36,11 +36,6 @@ def add_user(username: str, password: str, email: str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def delete_user(username: str, debug: bool):
     """Deletes git user"""
-    try:
-        user = find_user_by_username(username)
-    except NoResultFound:
-        print(f'user {username} does not exist')
-        sys.exit(1)    
 
     gitutil.delete_user(username)
 
@@ -91,3 +86,4 @@ def create_public_key(username: str, debug: bool):
         document += line
 
     gitutil.create_public_key(username, document)
+
