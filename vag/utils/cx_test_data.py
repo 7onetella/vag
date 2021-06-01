@@ -58,7 +58,7 @@ sudo apt-get install -y libpq-dev
 
     # ----------- user related instance tables -----------
 
-    new_user = User(username='7onetella', email='7onetella@gmail.com', password='teachmecoding', private_key="""-----BEGIN RSA PRIVATE KEY-----
+    new_user = User(username='foo', email='foo@gmail.com', password='teachmecoding', private_key="""-----BEGIN RSA PRIVATE KEY-----
 -----END RSA PRIVATE KEY-----""", public_key='rsa public key')
     session.add(new_user)
     session.commit()
@@ -80,10 +80,10 @@ sudo apt-get install -y libpq-dev
     session.add(IDERuntimeInstall(user_ide=user_ide_vscode, runtime_install=postgresql_install))
     session.commit()
 
-    containers_repo = UserRepo(uri='git@github.com:7onetella/containers.git', user=new_user)
-    vag_repo = UserRepo(uri='git@github.com:7onetella/vag.git', user=new_user)
-    sites_repo = UserRepo(uri='git@github.com:7onetella/sites.git', user=new_user)
-    users_repo = UserRepo(uri='git@github.com:7onetella/users.git', user=new_user)
+    containers_repo = UserRepo(uri='git@github.com:foo/containers.git', user=new_user)
+    vag_repo = UserRepo(uri='git@github.com:foo/vag.git', user=new_user)
+    sites_repo = UserRepo(uri='git@github.com:foo/sites.git', user=new_user)
+    users_repo = UserRepo(uri='git@github.com:foo/users.git', user=new_user)
     session.add(containers_repo)
     session.add(vag_repo)
     session.add(sites_repo)
@@ -106,4 +106,4 @@ def reset_test_data_foo():
     
 
 if __name__ == '__main__':
-    main()
+    pass

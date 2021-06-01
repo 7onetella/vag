@@ -23,8 +23,8 @@ class User(Base):
     username = Column(String(30), nullable=False, unique=True)
     password = Column(String(30), nullable=False)
     email = Column(String(30), nullable=False)
-    private_key = Column(String(2000), nullable=True)
-    public_key = Column(String(500), nullable=True)
+    private_key = Column(String(4000), nullable=True)
+    public_key = Column(String(1000), nullable=True)
 
 
 class IDE(Base):

@@ -11,33 +11,45 @@ from sqlalchemy import select
 from vag.utils.cx_schema import *
 
 
-def get_session_future():
-    engine = create_engine(get_connection_str())
+def init_session_future():
+    conn_str = get_connection_str()
+    if not conn_str:
+        return None
+    engine = create_engine(conn_str)
     Base.metadata.bind = engine        
     return Session(engine, future=True)
 
 
-db_session = get_session_future()
+db_session = init_session_future()
+
+
+def get_session(): 
+    conn_str = get_connection_str()
+    if not conn_str:
+        print('CX_DB_CONN must be set')
+        sys.exit(1)
+
+    return db_session
 
 
 def find_user_by_username(username: str):
     statement = select(User).filter_by(username=username)
-    return db_session.execute(statement).scalars().one()
+    return get_session().execute(statement).scalars().one()
 
 
 def find_runtime_install_by_name(runtime_install_name: str):
     statement = select(RuntimeInstall).filter_by(name=runtime_install_name)
-    return db_session.execute(statement).scalars().one()
+    return get_session().execute(statement).scalars().one()
 
 
 def find_ide_runtime_installs_by_user_id(user_ide_id):
     statement = select(IDERuntimeInstall).filter_by(user_ide_id=user_ide_id)
-    return db_session.execute(statement).scalars().all()   
+    return get_session().execute(statement).scalars().all()   
 
 
 def find_user_ides_by_user_id(user_id):
     statement = select(UserIDE).filter_by(user_id=user_id)
-    return db_session.execute(statement).scalars().all()   
+    return get_session().execute(statement).scalars().all()   
 
 
 def find_user_ide_by_user_id_ide_name(user_id, ide_name: str):
@@ -48,17 +60,17 @@ def find_user_ide_by_user_id_ide_name(user_id, ide_name: str):
 
 def find_user_repos_by_user_id(user_id):
     statement = select(UserRepo).filter_by(user_id=user_id)
-    return db_session.execute(statement).scalars().all()   
+    return get_session().execute(statement).scalars().all()   
 
 
 def find_ide_repos_by_user_ide_id(user_ide_id):
     statement = select(IDERepo).filter_by(user_ide_id=user_ide_id)
-    return db_session.execute(statement).scalars().all()   
+    return get_session().execute(statement).scalars().all()   
 
 
 def find_ide_by_name(ide_name: str):
     statement = select(IDE).filter_by(name=ide_name)
-    return db_session.execute(statement).scalars().one()
+    return get_session().execute(statement).scalars().one()
 
 
 def get_build_profile(username: str, ide_name: str) -> dict:
@@ -69,7 +81,7 @@ def get_build_profile(username: str, ide_name: str) -> dict:
     ide_repos = find_ide_repos_by_user_ide_id(user_ide.id)
 
     statement = select(IDERuntimeInstall).filter_by(user_ide=user_ide)
-    user_ide_runtime_installs = db_session.execute(statement).scalars().all()
+    user_ide_runtime_installs = get_session().execute(statement).scalars().all()
 
     bodies = [ u_r_i.runtime_install.script_body for u_r_i in user_ide_runtime_installs ]
     snppiets = []

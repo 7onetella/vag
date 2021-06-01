@@ -4,25 +4,44 @@ import giteapy
 from giteapy.rest import ApiException
 from pprint import pprint
 import os
+import sys
+
+from sqlalchemy.sql.functions import user
+
+
+def get_gitea_access_token():
+    access_token = os.getenv('GITEA_ACCESS_TOKEN')
+    if not access_token:
+        print('GITEA_ACCESS_TOKEN is missing')
+        sys.exit(1)
+    return access_token
 
 
 def get_api_instance() -> giteapy.AdminApi:
     configuration = giteapy.Configuration()
-    configuration.api_key['access_token'] = os.getenv('GITEA_ACCESS_TOKEN')
+    configuration.api_key['access_token'] = get_gitea_access_token()
     configuration.host = 'https://git.curiosityworks.org/api/v1'
     return giteapy.AdminApi(giteapy.ApiClient(configuration))
 
 
 def get_user_api_instance() -> giteapy.UserApi:
     configuration = giteapy.Configuration()
-    configuration.api_key['access_token'] = os.getenv('GITEA_ACCESS_TOKEN')
+    configuration.api_key['access_token'] = get_gitea_access_token()
     configuration.host = 'https://git.curiosityworks.org/api/v1'
     return giteapy.UserApi(giteapy.ApiClient(configuration))
 
 
-def get_repository_api_instance() -> giteapy.RepositoryApi():
+def get_repository_api_instance() -> giteapy.RepositoryApi:
     configuration = giteapy.Configuration()
-    configuration.api_key['access_token'] = os.getenv('GITEA_ACCESS_TOKEN')
+    configuration.api_key['access_token'] = get_gitea_access_token()
+    configuration.host = 'https://git.curiosityworks.org/api/v1'
+    return giteapy.RepositoryApi(giteapy.ApiClient(configuration))
+
+
+def get_repository_api_instance_user_cred(username: str, password: str) -> giteapy.RepositoryApi:
+    configuration = giteapy.Configuration()
+    configuration.username = username
+    configuration.password = password
     configuration.host = 'https://git.curiosityworks.org/api/v1'
     return giteapy.RepositoryApi(giteapy.ApiClient(configuration))
 
@@ -63,8 +82,8 @@ def create_user_repo(username: str, repo_name: str, debug: bool=False):
         print(f'failed to create user repo {repo_name}')
 
 
-def delete_user_repo(username: str, repo_name: str, debug: bool=False):
-    api_instance = get_repository_api_instance()
+def delete_user_repo(username: str, repo_name: str, password: str, debug: bool=False):
+    api_instance = get_repository_api_instance_user_cred(username, password)
 
     try:
         return api_instance.repo_delete(username, repo_name)

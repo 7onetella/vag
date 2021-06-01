@@ -45,7 +45,6 @@ def delete_user(username: str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def create_user_repo(username: str, repo_name: str, debug: bool):
     """Creates git user repo"""
-    
     gitutil.create_user_repo(username, repo_name)
 
 
@@ -55,8 +54,9 @@ def create_user_repo(username: str, repo_name: str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def delete_user_repo(username: str, repo_name: str, debug: bool):
     """Deletes git user repo"""
+    user = find_user_by_username(username)
     
-    gitutil.delete_user_repo(username, repo_name, debug)
+    gitutil.delete_user_repo(username, repo_name, user.password, debug)
 
 
 @gitea.command()

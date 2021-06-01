@@ -4,6 +4,8 @@ import shlex
 import click
 import requests
 from os.path import expanduser
+
+import sqlalchemy
 from vag.utils import exec
 from vag.utils import config
 from vag.utils.misc import create_ssh
@@ -12,6 +14,9 @@ from vag.utils.cx_db_util import *
 from vag.utils.cx_test_data import *
 import vag.utils.gitea_api_util as gitutil
 import yaml
+from psycopg2.errors import *
+from sqlalchemy.exc import IntegrityError 
+
 
 @click.group()
 def cx():
@@ -26,10 +31,14 @@ def cx():
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def add_user(username: str, password: str, email: str, debug: bool):
     """Adds user"""
-    session = db_session
+    session = get_session()
     new_user = User(username=username, password=password, email=email)
     session.add(new_user)
-    session.commit()
+    try:
+        session.commit()
+    except IntegrityError:
+        print(f'user {username} already exists')
+        sys.exit(1)
 
 
 @cx.command()
@@ -43,7 +52,7 @@ def clone_user(src_username: str, target_username: str, password: str, email: st
 
     src_user = find_user_by_username(src_username)
 
-    session = db_session
+    session = get_session()
 
     new_user = User(username=target_username, password=password, email=email)
     print(f'creating user {new_user.username}')
@@ -83,31 +92,31 @@ def delete_user(src_username: str, debug: bool):
     """Clones user"""
 
     user = find_user_by_username(src_username)
-    session = db_session
+    session = get_session()
 
     user_ides = find_user_ides_by_user_id(user.id)
     for ui in user_ides:
 
         ide_runtime_installs = find_ide_runtime_installs_by_user_id(ui.id)
         for i in ide_runtime_installs:
-            print(f'deleting ide_runtime_install {i.runtime_install.name}')
+            print(f'deleting ide_runtime_install : {i.runtime_install.name}')
             session.delete(i)
 
         ide_repos = find_ide_repos_by_user_ide_id(ui.id)        
         for ir in ide_repos:
-            print(f'deleting ide_repo {ir.uri}')
+            print(f'deleting ide_repo            : {ir.uri}')
             session.delete(ir)
 
-        print(f'deleting user_ide {ui.ide.name}')
+        print(f'deleting user_ide            : {ui.ide.name}')
         session.delete(ui)
 
     user_repos = find_user_repos_by_user_id(user.id)    
     for user_repo in user_repos:
-        print(f'deleting user_repo {user_repo.uri}')
+        print(f'deleting user_repo           : {user_repo.uri}')
         session.delete(user_repo)
 
-    session = db_session
-    print(f'deleting user {user.username}')
+    session = get_session()
+    print(f'deleting user                : {user.username}')
     session.delete(user)
     session.commit()
 
@@ -120,7 +129,7 @@ def add_user_repo(username: str, repo: str, debug: bool):
     """add repo to user's list of repos"""
 
     user = find_user_by_username(username)
-    session = db_session
+    session = get_session()
     user_repo = UserRepo(uri=repo, user_id=user.id)
     session.add(user_repo)
     session.commit()
@@ -137,7 +146,7 @@ def add_runtime_install(name: str, debug: bool):
         document += line
 
     runtime_install = RuntimeInstall(name=name, script_body=document)
-    session = db_session
+    session = get_session()
     session.add(runtime_install)
     session.commit()
 
@@ -154,7 +163,7 @@ def add_ide_runtime_install(username: str, ide_name: str, runtime_install_name: 
     user_ide = find_user_ide_by_user_id_ide_name(user.id, ide_name)
     runtime_install = find_runtime_install_by_name(runtime_install_name)
 
-    session = db_session
+    session = get_session()
     user_runtime_install = IDERuntimeInstall(user_ide_id=user_ide.id, runtime_install_id=runtime_install.id)
     session.add(user_runtime_install)
     session.commit()
@@ -169,7 +178,7 @@ def add_ide_repo(username: str, ide_name: str, repo: str, debug: bool):
     """add repo to user's list of repos"""
 
     user = find_user_by_username(username)
-    session = db_session
+    session = get_session()
     user_ide = find_user_ide_by_user_id_ide_name(user.id, ide_name)
     ide_repo = IDERepo(uri=repo, user_ide_id=user_ide.id)
     session.add(ide_repo)
@@ -185,7 +194,7 @@ def add_user_ide(username: str, ide_name: str, debug: bool):
 
     user = find_user_by_username(username)
     ide = find_ide_by_name(ide_name)
-    session = db_session
+    session = get_session()
     user_ide = UserIDE(user_id=user.id, ide_id=ide.id)
     session.add(user_ide)
     session.commit()
@@ -203,7 +212,7 @@ def user_private_key(username: str, debug: bool):
 
     user = find_user_by_username(username)
     user.private_key = document
-    session = db_session
+    session = get_session()
     session.add(user)
     session.commit()
 
@@ -220,7 +229,7 @@ def user_public_key(username: str, debug: bool):
 
     user = find_user_by_username(username)
     user.public_key = document
-    session = db_session
+    session = get_session()
     session.add(user)
     session.commit()
 
