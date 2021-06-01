@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 import yaml
 from sqlalchemy import select
 from vag.utils.cx_schema import *
+import time
 
 
 def init_session_future():
@@ -17,7 +18,7 @@ def init_session_future():
         return None
     engine = create_engine(conn_str)
     Base.metadata.bind = engine        
-    return Session(engine, future=True)
+    return Session(engine)
 
 
 db_session = init_session_future()
