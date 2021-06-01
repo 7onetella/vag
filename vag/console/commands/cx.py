@@ -43,50 +43,6 @@ def add_user(username: str, password: str, email: str, debug: bool):
 
 @cx.command()
 @click.argument('src_username', metavar='<src_username>')
-@click.argument('target_username', metavar='<target_username>')
-@click.argument('password', metavar='<password>')
-@click.argument('email', metavar='<email>')
-@click.option('--debug', is_flag=True, default=False, help='debug this command')
-def clone_user(src_username: str, target_username: str, password: str, email: str, debug: bool):
-    """Clones user"""
-
-    src_user = find_user_by_username(src_username)
-
-    session = get_session()
-
-    new_user = User(username=target_username, password=password, email=email)
-    print(f'creating user {new_user.username}')
-    session.add(new_user)
-
-    src_user_repos = find_user_repos_by_user_id(src_user.id)
-    for src_user_repo in src_user_repos:
-        print(f'copying user_repo {src_user_repo.uri}')
-        session.add(UserRepo(user=new_user, uri=src_user_repo.uri))
-
-    src_user_ides = find_user_ides_by_user_id(src_user.id)
-    for src_user_ide in src_user_ides:
-        new_user_ide = UserIDE(user=new_user, ide=src_user_ide.ide)
-        print(f'copying user_ide {src_user_ide.ide.name}')
-        session.add(new_user_ide)
-
-        src_ide_repos = find_ide_repos_by_user_ide_id(src_user_ide.id)
-        for src_ide_repo in src_ide_repos:
-            new_ide_repo = IDERepo(user_ide=new_user_ide, uri=src_ide_repo.uri)
-            print(f'copying   ide_repo {src_ide_repo.uri}')
-            session.add(new_ide_repo)
-
-        src_ide_runtime_installs = find_ide_runtime_installs_by_user_id(src_user_ide.id)
-        for src_ide_runtime_install in src_ide_runtime_installs:
-            new_ide_runtime_install = IDERuntimeInstall(user_ide_id=new_user_ide.id, runtime_install=src_ide_runtime_install.runtime_install)
-            print(f'copying   ide_runtime_install {src_ide_runtime_install.runtime_install.name}')
-            session.add(new_ide_runtime_install)
-
-    session.commit()
-
-
-
-@cx.command()
-@click.argument('src_username', metavar='<src_username>')
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def delete_user(src_username: str, debug: bool):
     """Clones user"""
