@@ -17,7 +17,6 @@ def init_session_future():
     if not conn_str:
         return None
     engine = create_engine(conn_str)
-    Base.metadata.bind = engine        
     return Session(engine)
 
 
