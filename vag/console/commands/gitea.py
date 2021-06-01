@@ -12,6 +12,7 @@ from vag.utils.cx_db_util import *
 from vag.utils.cx_test_data import *
 import vag.utils.gitea_api_util as gitutil
 import yaml
+from sqlalchemy.exc import NoResultFound
 
 @click.group()
 def gitea():
@@ -35,7 +36,12 @@ def add_user(username: str, password: str, email: str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def delete_user(username: str, debug: bool):
     """Deletes git user"""
-    
+    try:
+        user = find_user_by_username(username)
+    except NoResultFound:
+        print(f'user {username} does not exist')
+        sys.exit(1)    
+
     gitutil.delete_user(username)
 
 
@@ -54,7 +60,11 @@ def create_user_repo(username: str, repo_name: str, debug: bool):
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def delete_user_repo(username: str, repo_name: str, debug: bool):
     """Deletes git user repo"""
-    user = find_user_by_username(username)
+    try:
+        user = find_user_by_username(username)
+    except NoResultFound:
+        print(f'user {username} does not exist')
+        sys.exit(1)
     
     gitutil.delete_user_repo(username, repo_name, user.password, debug)
 
