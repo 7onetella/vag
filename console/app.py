@@ -118,8 +118,9 @@ def callback():
         login_user(user)
 
         profile = get_build_profile('mo', 'vscode')
-        return render_template('main.html', profile=profile)
+        # return render_template('main.html', profile=profile)
         # return render_template('user.html', unique_id=unique_id, users_email=users_email, picture=picture, users_name=users_name) 
+        return redirect(url_for("index"))
     else:
         return "User email not available or not verified by Google.", 400
 
@@ -134,8 +135,9 @@ def logout():
 @login_manager.user_loader
 def load_user(username: str):
     print(f"load_user {username}")
-    return find_user_by_username(username)
-
+    u = find_user_by_username('mo')
+    return UserObj(u.id, u.username, u.email)
+    
 
 if __name__ == "__main__":
     app.run(debug=True, ssl_context="adhoc")
