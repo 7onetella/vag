@@ -32,7 +32,7 @@ def get_session():
     return db_session
 
 
-def find_user_by_username(username: str):
+def find_user_by_username(username: str) -> User:
     statement = select(User).filter_by(username=username)
     return get_session().execute(statement).scalars().one()
 

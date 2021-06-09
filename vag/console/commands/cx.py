@@ -6,7 +6,7 @@ import requests
 from os.path import expanduser
 
 import sqlalchemy
-from vag.utils import exec
+from vag.utils import exec, user_util
 from vag.utils import config
 from vag.utils.misc import create_ssh
 from vag.utils.cx_schema import *
@@ -31,14 +31,8 @@ def cx():
 @click.option('--debug', is_flag=True, default=False, help='debug this command')
 def add_user(username: str, password: str, email: str, debug: bool):
     """Adds user"""
-    session = get_session()
-    new_user = User(username=username, password=password, email=email)
-    session.add(new_user)
-    try:
-        session.commit()
-    except IntegrityError:
-        print(f'user {username} already exists')
-        sys.exit(1)
+
+    user_util.add_user(username, password, email)
 
 
 @cx.command()

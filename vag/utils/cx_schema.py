@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 import yaml
 from sqlalchemy import select
+from flask_login import UserMixin
 
 
 def get_connection_str():
@@ -17,14 +18,26 @@ def get_connection_str():
 Base = declarative_base()
 
 
+class UserObj(UserMixin):
+    def __init__(self, id_, name, email):
+        self.id = id_
+        self.name = name
+        self.email = email
+
+
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     username = Column(String(30), nullable=False, unique=True)
     password = Column(String(30), nullable=False)
     email = Column(String(30), nullable=False)
+    is_active = Column(Boolean) 
     private_key = Column(String(4000), nullable=True)
     public_key = Column(String(1000), nullable=True)
+
+    def get_id(param1):
+        print(param1)
+        return id
 
 
 class IDE(Base):
