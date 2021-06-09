@@ -9,29 +9,66 @@
     <div class="container">
         {% include "navbar.html" %}
     
-        <div class="container">
-            <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
-              <div class="col">
-                <div class="p-3 border bg-light">
-                    <a href="https://{{ profile.ide}}-{{ profile.username }}.curiosityworks.org">{{ profile.ide }}</a>
-                </div>
-              </div>
-              <div class="col">
-                <div class="p-3 border bg-light">
-                    <a href="https://{{ profile.ide}}-{{ profile.username }}.curiosityworks.org/proxy/2222/">terminal</a>
-                </div>
-              </div>
-              <div class="col">
-                <div class="p-3 border bg-light">
-                    <a href="https://git.curiosityworks.org">gitea</a>
-                </div>
-              </div>
-              <div class="col">
-                <div class="p-3 border bg-light">Row column</div>
-              </div>
+        <section class="hero">
+          <div class="hero-body">
+            <p class="title">
+              Your tools for coding
+            </p>
+            <p class="subtitle">
+              with great power comes great responsibility
+            </p>
+          </div>
+        </section>
+
+        <article class="media">
+          <figure class="media-left">
+            <p class="image is-64x64">
+              <img src="https://www.curiosityworks.org/images/vs-icon.svg">
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong><a href="https://{{ profile.ide}}-{{ profile.username }}.curiosityworks.org">{{ profile.ide }}</a></strong>
+                <br>
+                editor for your code
+              </p>
             </div>
-        </div>    
-        
-    </div>    
-</body>
+          </div>
+        </article>
+        <article class="media">
+          <figure class="media-left">
+            <p class="image is-64x64">
+              <img src="/static/Octicons-terminal.svg">
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong><a href="https://{{ profile.ide}}-{{ profile.username }}.curiosityworks.org/proxy/2222/">terminal</a></strong>
+                <br>
+                dedicated terminal for convinience
+              </p>
+            </div>
+          </div>
+        </article>
+        <article class="media">
+          <figure class="media-left">
+            <p class="image is-64x64">
+              <img src="https://git.curiosityworks.org/img/gitea-lg.png">
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong><a href="https://git.curiosityworks.org">git</a></strong>
+                <br>
+                your code gets stored here
+              </p>
+            </div>
+          </div>
+        </article>
+        {% include "footer.html" %}
+      </div>    
+  </body>
 </html>
