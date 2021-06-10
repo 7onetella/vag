@@ -159,6 +159,7 @@ def callback():
 
         logger.info('logging in user done') 
 
+        # https://github.com/pallets/flask/issues/773  redirect not aware of https
         return redirect(url_for("index", _external=True, _scheme="https"))
     else:
         return "User email not available or not verified by Google.", 400
