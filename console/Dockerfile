@@ -11,15 +11,16 @@ RUN apt-get update --fix-missing  &&    \
     libpq-dev                           
 
 
-# RUN mkdir -p /console               && \
-#     chown -R coder:coder   /console
+RUN mkdir -p /console                   && \
+    chown -R coder:coder   /console     
 
-COPY --chown=coder:coder .              /console
+COPY --chown=coder:coder requirements.txt  /console
 
 RUN cd /console                     && \
     pip3 install "pip>=20"          && \
     pip3 install -r ./requirements.txt  
 
+COPY --chown=coder:coder .              /console
 
 USER 1000
 ENV USER=coder
@@ -32,7 +33,7 @@ RUN  chmod +x /entrypoint.sh
 
 
 EXPOSE 22
-EXPOSE 3000
+EXPOSE 5000
 
 
 CMD /entrypoint.sh
