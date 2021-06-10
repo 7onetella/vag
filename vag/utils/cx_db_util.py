@@ -32,6 +32,18 @@ def get_session():
     return db_session
 
 
+def find_one(statement):
+    try:
+        return get_session().execute(statement).scalars().one()    
+    except:
+        return None
+
+
+def find_user_by_google_id(google_id: str) -> User:
+    statement = select(User).filter_by(google_id=google_id)
+    return find_one(statement) 
+
+
 def find_user_by_username(username: str) -> User:
     statement = select(User).filter_by(username=username)
     return get_session().execute(statement).scalars().one()

@@ -28,16 +28,13 @@ class UserObj(UserMixin):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    username = Column(String(30), nullable=False, unique=True)
-    password = Column(String(30), nullable=False)
-    email = Column(String(30), nullable=False)
-    is_active = Column(Boolean) 
+    google_id = Column(String(50), nullable=True, unique=False) 
+    username = Column(String(50), nullable=False, unique=True)
+    password = Column(String(100), nullable=False)
+    email = Column(String(50), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True) 
     private_key = Column(String(4000), nullable=True)
     public_key = Column(String(1000), nullable=True)
-
-    def get_id(param1):
-        print(param1)
-        return id
 
 
 class IDE(Base):

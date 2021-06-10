@@ -59,7 +59,7 @@ sudo apt-get install -y libpq-dev
     # ----------- user related instance tables -----------
 
     new_user = User(username='foo', email='foo@gmail.com', password='teachmecoding', private_key="""-----BEGIN RSA PRIVATE KEY-----
------END RSA PRIVATE KEY-----""", public_key='rsa public key')
+-----END RSA PRIVATE KEY-----""", public_key='rsa public key', google_id='1234')
     session.add(new_user)
     session.commit()
 
@@ -106,4 +106,4 @@ def reset_test_data_foo():
     
 
 if __name__ == '__main__':
-    pass
+    reset_test_data_foo()

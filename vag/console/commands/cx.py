@@ -32,7 +32,7 @@ def cx():
 def add_user(username: str, password: str, email: str, debug: bool):
     """Adds user"""
 
-    user_util.add_user(username, password, email)
+    user_util.add_user(username, password, email, '')
 
 
 @cx.command()
