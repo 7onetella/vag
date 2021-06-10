@@ -4,4 +4,4 @@
 
 export FLASK_ENV=development
 
-python3 ./console/app.py
+python3 ./app.py

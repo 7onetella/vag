@@ -43,13 +43,14 @@ def index():
         return redirect(url_for("login"))
 
     profile = get_build_profile('mo', 'vscode')
-    return render_template('main.html', profile=profile)
+    return render_template('main.html', profile=profile, logged_in=True)
 
 
 @app.route('/profile/')
+@login_required
 def profile():
     profile = get_build_profile('mo', 'vscode')
-    return render_template('profile.html', profile=profile)
+    return render_template('profile.html', profile=profile, logged_in=True)
 
 
 @app.route("/login")
@@ -129,7 +130,12 @@ def callback():
 @login_required
 def logout():
     logout_user()
-    return "You are logged out"
+    return redirect(url_for("logged_out"))
+
+
+@app.route("/logged_out")
+def logged_out():
+    return render_template('logged_out.html')
 
 
 @login_manager.user_loader

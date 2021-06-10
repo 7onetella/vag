@@ -43,11 +43,19 @@
   
       <div class="navbar-end">
         <div class="navbar-item">
+          {% if logged_in %}
           <div class="buttons">
             <a class="button is-primary" href="/logout">
               <strong>Log out</strong>
             </a>
           </div>
+          {% else %}
+          <div class="buttons">
+            <a class="button is-primary" href="/login">
+              <strong>Log in</strong>
+            </a>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
