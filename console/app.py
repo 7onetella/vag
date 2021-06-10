@@ -193,5 +193,5 @@ if __name__ == "__main__":
     if args.debug:
         app.run(debug=True, ssl_context="adhoc")
     else:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(debug=False, host='0.0.0.0', port=5000)
 
