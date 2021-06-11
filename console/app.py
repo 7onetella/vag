@@ -287,6 +287,16 @@ def hashed(s: str) -> str:
     return hashlib.sha256(bytes(s, 'utf-8')).hexdigest()
 
 
+@app.route("/tos")
+def tos():
+    return render_template('tos.html')  
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template('privacy.html')  
+
+
 if __name__ == "__main__":
     if args.debug:
         app.run(debug=True, ssl_context="adhoc")
