@@ -92,7 +92,7 @@ def get_google_request_uri() -> str:
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=redirect_uri,
-        scope=["openid", "email", "profile"],
+        scope=["openid", "email"],
     )
     return request_uri
 
