@@ -17,6 +17,9 @@ import json
 import argparse
 import logging
 import traceback
+from random_username.generate import generate_username
+from password_generator import PasswordGenerator
+import hashlib
 
 
 logging.basicConfig(level=logging.INFO)
@@ -121,10 +124,11 @@ def signup_callback():
             logger.info(userinfo_json)
 
         google_id = userinfo_json["sub"]
-        users_email = userinfo_json["email"]
-        picture = userinfo_json["picture"]
-        firstname = userinfo_json["given_name"]
-        lastname = userinfo_json["family_name"]
+        google_id = hashed(google_id)
+        # users_email = userinfo_json["email"]
+        # picture = userinfo_json["picture"]
+        # firstname = userinfo_json["given_name"]
+        # lastname = userinfo_json["family_name"]
 
         try:
             db_user = find_user_by_google_id(google_id)
@@ -134,7 +138,18 @@ def signup_callback():
                 login_user(user)
             else:
                 logger.info("user not found adding user to the databse")
-                new_user = user_util.add_user(f'{firstname}{lastname}', 'teachmecoding', users_email, google_id, exitOnFailure=False)
+                random_username = generate_username(1)[0]
+                random_username = random_username.lower()
+                pwo = PasswordGenerator()
+                pwo.minlen = 30 # (Optional)
+                pwo.maxlen = 30 # (Optional)
+                pwo.minuchars = 2 # (Optional)
+                pwo.minlchars = 3 # (Optional)
+                pwo.minnumbers = 1 # (Optional)
+                pwo.minschars = 1 # (Optional)
+                random_password = pwo.generate()
+                random_email = f'{random_username}@example.com'
+                new_user = user_util.add_user(f'{random_username}', random_password, random_email, google_id, exitOnFailure=False)
                 user = UserObj(google_id, new_user.username, new_user.email)
                 login_user(user) 
                 return redirect(secure_url_for("tools")) 
@@ -202,10 +217,11 @@ def callback():
             logger.info(userinfo_json)
 
         google_id = userinfo_json["sub"]
-        users_email = userinfo_json["email"]
-        picture = userinfo_json["picture"]
-        firstname = userinfo_json["given_name"]
-        lastname = userinfo_json["family_name"]
+        google_id = hashed(google_id)
+        # users_email = userinfo_json["email"]
+        # picture = userinfo_json["picture"]
+        # firstname = userinfo_json["given_name"]
+        # lastname = userinfo_json["family_name"]
 
         try:
             db_user = find_user_by_google_id(google_id)
@@ -258,7 +274,6 @@ def page_not_found(e):
 
 @login_manager.user_loader
 def load_user(google_id: str):
-    print(f"load_user {google_id}")
     u = find_user_by_google_id(google_id)
     return UserObj(u.id, u.username, u.email)
 
@@ -266,6 +281,10 @@ def load_user(google_id: str):
 @app.route("/health")
 def health():
     return "OK" 
+
+
+def hashed(s: str) -> str:
+    return hashlib.sha256(bytes(s, 'utf-8')).hexdigest()
 
 
 if __name__ == "__main__":

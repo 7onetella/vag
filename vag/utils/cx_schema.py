@@ -28,7 +28,7 @@ class UserObj(UserMixin):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    google_id = Column(String(50), nullable=True, unique=False) 
+    google_id = Column(String(64), nullable=True, unique=False) 
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     email = Column(String(50), nullable=False)

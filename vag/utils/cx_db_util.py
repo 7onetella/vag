@@ -16,7 +16,7 @@ def init_session_future():
     conn_str = get_connection_str()
     if not conn_str:
         return None
-    engine = create_engine(conn_str)
+    engine = create_engine(conn_str, isolation_level="AUTOCOMMIT")
     return Session(engine)
 
 
