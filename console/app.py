@@ -56,6 +56,7 @@ def index():
 
 
 @app.route("/tools")
+@login_required
 def tools():
     logger.info("tools")
     if current_user.is_authenticated:
@@ -67,7 +68,7 @@ def tools():
     return render_template('tools.html', profile=profile, logged_in=True)
 
 
-@app.route('/profile/')
+@app.route('/profile')
 @login_required
 def profile():
     profile = get_build_profile(current_user.name, 'vscode')
