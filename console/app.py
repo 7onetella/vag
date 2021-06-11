@@ -52,19 +52,19 @@ def secure_url_for(route_name: str) -> str:
 
 @app.route("/")
 def index():
-    return render_template('home.html', profile=profile, logged_in=False)
+    return render_template('home.html', profile=profile, current_user=current_user)
 
 
-@app.route("/main")
-def main():
-    logger.info("main")
+@app.route("/tools")
+def tools():
+    logger.info("tools")
     if current_user.is_authenticated:
         logger.info(current_user)
     else:
         return redirect(secure_url_for("login"))
 
     profile = get_build_profile(current_user.name, 'vscode')
-    return render_template('main.html', profile=profile, logged_in=True)
+    return render_template('tools.html', profile=profile, logged_in=True)
 
 
 @app.route('/profile/')
@@ -136,7 +136,7 @@ def signup_callback():
                 new_user = user_util.add_user(f'{firstname}{lastname}', 'teachmecoding', users_email, google_id, exitOnFailure=False)
                 user = UserObj(google_id, new_user.username, new_user.email)
                 login_user(user) 
-                return redirect(secure_url_for("main")) 
+                return redirect(secure_url_for("tools")) 
         except:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -145,7 +145,7 @@ def signup_callback():
 
         logger.info('retrieving user done') 
 
-        return redirect(secure_url_for("main"))
+        return redirect(secure_url_for("tools"))
     else:
         return "User email not available or not verified by Google.", 400
 
@@ -221,7 +221,7 @@ def callback():
         logger.info('retrieving user done') 
 
         # https://github.com/pallets/flask/issues/773  redirect not aware of https
-        return redirect(secure_url_for("main"))
+        return redirect(secure_url_for("tools"))
     else:
         return "User email not available or not verified by Google.", 400
 
@@ -241,6 +241,18 @@ def logout():
 @app.route("/logged_out")
 def logged_out():
     return render_template('logged_out.html')
+
+
+@app.errorhandler(401)
+def unauthorized(e):
+    # note that we set the 401 status explicitly
+    return render_template('401.html'), 401
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
 
 
 @login_manager.user_loader
