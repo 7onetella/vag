@@ -287,14 +287,14 @@ def hashed(s: str) -> str:
     return hashlib.sha256(bytes(s, 'utf-8')).hexdigest()
 
 
-@app.route("/tos")
+@app.route("/tos_06_11_2021")
 def tos():
-    return render_template('tos.html')  
+    return render_template('tos_06_11_2021.html')  
 
 
-@app.route("/privacy")
+@app.route("/privacy_06_11_2021")
 def privacy():
-    return render_template('privacy.html')  
+    return render_template('privacy_06_11_2021.html')  
 
 
 if __name__ == "__main__":
