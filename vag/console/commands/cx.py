@@ -217,3 +217,27 @@ def reset_test_data(debug: bool):
 
     print('resetting test data')
     reset_test_data_foo()
+
+
+@cx.command()
+@click.argument('email', metavar='<email>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def add_enrollment(email: str, debug: bool):
+    """Adds enrollment"""
+
+    user_util.add_enrollment(email)
+
+
+@cx.command()
+@click.argument('email', metavar='<email>')
+@click.option('--debug', is_flag=True, default=False, help='debug this command')
+def remove_enrollment(email: str, debug: bool):
+    """Removes enrollment"""
+
+    session = get_session()
+    enrollment = find_enrollment_by_hashed_email(hashed_email=user_util.hashed(email))
+    if enrollment:
+        session.delete(enrollment)
+    session.commit()
+
+ 

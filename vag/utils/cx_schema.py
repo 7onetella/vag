@@ -84,6 +84,12 @@ class IDERepo(Base):
     uri = Column(String(100))
 
 
+class Enrollment(Base):
+    __tablename__ = 'enrollment'
+    id = Column(Integer, primary_key=True)
+    hashed_email = Column(String(64), nullable=False, unique=True)
+
+    
 def query_data():
     engine = create_engine(get_connection_str())
     Base.metadata.bind = engine    

@@ -2,6 +2,7 @@ from re import I
 from vag.utils.cx_schema import *
 from vag.utils.cx_db_util import *
 from sqlalchemy.exc import IntegrityError, NoResultFound
+import hashlib
 
 
 def add_user(username: str, password: str, email: str, google_id: str, exitOnFailure=True) -> User:
@@ -36,3 +37,22 @@ def add_user(username: str, password: str, email: str, google_id: str, exitOnFai
     session.commit()
 
     return new_user
+
+
+def add_enrollment(email: str, exitOnFailure=True) -> Enrollment:
+    session = get_session()
+    hashed_email = hashed(email)
+    new_enrollment = Enrollment(hashed_email=hashed_email)
+    session.add(new_enrollment)
+    try:
+        session.commit()
+    except IntegrityError:
+        print(f'enrollment for {email} already exists')
+        if exitOnFailure:
+            sys.exit(1)
+        else:            
+            return None
+
+
+def hashed(s: str) -> str:
+    return hashlib.sha256(bytes(s, 'utf-8')).hexdigest()            
