@@ -24,6 +24,7 @@ pyOpenSSL = "^20.0.1"
 random-username = "^1.0.2"
 random-password-generator = "^2.1.2"
 cryptography = "^3.4.7"
+jenkinsapi = "^0.3.11"
 
 [tool.poetry.scripts]
 vag = "vag.console.application:main"
