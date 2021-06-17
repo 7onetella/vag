@@ -6,7 +6,7 @@ import requests
 from os.path import expanduser
 
 import sqlalchemy
-from vag.utils import exec, user_util
+from vag.utils import exec, jenkins_util, user_util
 from vag.utils import config
 from vag.utils.misc import create_ssh
 from vag.utils.cx_schema import *
@@ -225,7 +225,11 @@ def reset_test_data(debug: bool):
 def add_enrollment(email: str, debug: bool):
     """Adds enrollment"""
 
-    user_util.add_enrollment(email)
+    new_user = user_util.add_enrollment(email)
+    print('adding new user successful')
+    
+    jenkins_util.run_job('codeserver', {'USERNAME': new_user.username})
+    print('creating new code-server successful')
 
 
 @cx.command()

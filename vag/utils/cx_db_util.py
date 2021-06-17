@@ -44,9 +44,16 @@ def find_user_by_google_id(google_id: str) -> User:
     return find_one(statement) 
 
 
-def find_enrollment_by_hashed_email(hashed_email: str) -> Enrollment:
-    statement = select(Enrollment).filter_by(hashed_email=hashed_email)
-    return find_one(statement)     
+def find_enrollment_by_hashed_email(hashed_email: str) -> User:
+    statement = select(User).filter_by(hashed_email=hashed_email)
+    return find_one(statement)    
+
+
+def update_user(hashed_email: str, google_id: str): 
+    session = get_session()
+    user = session.query(User).filter_by(hashed_email=hashed_email).first() 
+    user.google_id = google_id
+    session.commit()
 
 
 def find_user_by_username(username: str) -> User:

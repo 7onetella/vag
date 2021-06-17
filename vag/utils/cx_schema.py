@@ -32,6 +32,7 @@ class User(Base):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     email = Column(String(50), nullable=False)
+    hashed_email = Column(String(64), nullable=False, unique=False) 
     is_active = Column(Boolean, nullable=False, default=True) 
     private_key = Column(String(4000), nullable=True)
     public_key = Column(String(1000), nullable=True)
@@ -84,12 +85,6 @@ class IDERepo(Base):
     uri = Column(String(100))
 
 
-class Enrollment(Base):
-    __tablename__ = 'enrollment'
-    id = Column(Integer, primary_key=True)
-    hashed_email = Column(String(64), nullable=False, unique=True)
-
-    
 def query_data():
     engine = create_engine(get_connection_str())
     Base.metadata.bind = engine    

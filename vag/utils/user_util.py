@@ -4,14 +4,17 @@ from vag.utils.cx_schema import *
 from vag.utils.cx_db_util import *
 from vag.utils import gitea_api_util
 from sqlalchemy.exc import IntegrityError, NoResultFound
+from random_username.generate import generate_username
+from password_generator import PasswordGenerator
 import hashlib
 
-def add_user(username: str, password: str, email: str, google_id: str, exitOnFailure=True) -> User:
+
+def add_user(username: str, password: str, email: str, google_id: str, hashed_email: str, exitOnFailure=True) -> User:
     session = get_session()
     username = username.lower()
 
     private_key, public_key = genereate_rsa_keys()
-    new_user = User(username=username, password=password, email=email, google_id=google_id, private_key=private_key, public_key=public_key)
+    new_user = User(username=username, password=password, email=email, google_id=google_id, private_key=private_key, public_key=public_key, hashed_email=hashed_email)
     session.add(new_user)
     try:
         session.commit()
@@ -52,20 +55,28 @@ def add_user(username: str, password: str, email: str, google_id: str, exitOnFai
     return new_user
 
 
-def add_enrollment(email: str, exitOnFailure=True) -> Enrollment:
-    session = get_session()
+def add_enrollment(email: str, exitOnFailure=True) -> User:
     hashed_email = hashed(email)
-    new_enrollment = Enrollment(hashed_email=hashed_email)
-    session.add(new_enrollment)
-    try:
-        session.commit()
-    except IntegrityError:
-        print(f'enrollment for {email} already exists')
-        if exitOnFailure:
-            sys.exit(1)
-        else:            
-            return None
+    return create_new_user(hashed_email)
+
+
+def create_new_user(hashed_email: str) -> User:
+    random_username = generate_username(1)[0]
+    random_username = random_username.lower()
+    pwo = PasswordGenerator()
+    pwo.minlen = 30 # (Optional)
+    pwo.maxlen = 30 # (Optional)
+    pwo.minuchars = 2 # (Optional)
+    pwo.minlchars = 3 # (Optional)
+    pwo.minnumbers = 1 # (Optional)
+    pwo.minschars = 0 # (Optional)
+    pwo.excludeschars = "!$%^*:="
+    random_password = pwo.generate()
+    random_email = f'{random_username}@example.com'
+    return add_user(f'{random_username}', random_password, random_email, '', hashed_email, exitOnFailure=False)
 
 
 def hashed(s: str) -> str:
     return hashlib.sha256(bytes(s, 'utf-8')).hexdigest()            
+
+

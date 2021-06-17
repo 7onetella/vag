@@ -20,6 +20,7 @@ import traceback
 from random_username.generate import generate_username
 from password_generator import PasswordGenerator
 import hashlib
+from vag.utils import jenkins_util
 
 
 logging.basicConfig(level=logging.INFO)
@@ -102,63 +103,8 @@ def login():
     return redirect(get_google_request_uri())  
 
 
-@app.route("/signup")
-def signup():
-    return redirect(get_google_request_uri())  
-
-
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
-
-
-@app.route("/signup/callback")
-def signup_callback():
-    logger.info("/signup/callback")
-
-    userinfo_response = get_userinfo_response()
-
-    if userinfo_response.json().get("email_verified"):
-        userinfo_json = userinfo_response.json()
-
-        if args.debug: 
-            logger.info(userinfo_json)
-
-        google_id = userinfo_json["sub"]
-        google_id = hashed(google_id)
-        users_email = userinfo_json["email"]
-        # picture = userinfo_json["picture"]
-        # firstname = userinfo_json["given_name"]
-        # lastname = userinfo_json["family_name"]
-
-        try:
-            db_user = find_user_by_google_id(google_id)
-            if db_user:
-                logger.info("user found logging user in")
-                user = UserObj(db_user.id, db_user.username, db_user.email)
-                login_user(user)
-                return redirect(secure_url_for("tools"))
-            else:
-                hashed_email = hashed(users_email)
-                enrollment = find_enrollment_by_hashed_email(hashed_email)
-                if enrollment:
-                    logger.info("user not found adding user to the databse")
-                    new_user = create_new_user(google_id)
-                    user = UserObj(google_id, new_user.username, new_user.email)
-                    login_user(user) 
-                    return redirect(secure_url_for("tools")) 
-                else:
-                    return redirect(secure_url_for("missing_enrollement"))  
-        except:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            tb = traceback.format_exc()
-            logger.warning(f'{exc_type}, {fname}, {exc_tb.tb_lineno}, {tb}')
-
-        logger.info('retrieving user done') 
-
-        return redirect(secure_url_for("tools"))
-    else:
-        return "User email not available or not verified by Google.", 400
 
 
 def get_userinfo_response():
@@ -226,10 +172,11 @@ def callback():
             else:
                 hashed_email = hashed(users_email)
                 logger.info(f"hashed_email = {hashed_email}")
-                enrollment = find_enrollment_by_hashed_email(hashed_email)
-                if enrollment:
-                    new_user = create_new_user(google_id)
-                    user = UserObj(google_id, new_user.username, new_user.email)
+                enrolled_user = find_enrollment_by_hashed_email(hashed_email)
+                if enrolled_user:                    
+                    logger.info(f'enrolled_user = {enrolled_user}')
+                    update_user(hashed_email, google_id) 
+                    user = UserObj(google_id, enrolled_user.username, enrolled_user.email)
                     login_user(user) 
                     return redirect(secure_url_for("tools")) 
                 else:
@@ -299,22 +246,6 @@ def tos():
 @app.route("/privacy_06_11_2021")
 def privacy():
     return render_template('privacy_06_11_2021.html')  
-
-
-def create_new_user(google_id: str) -> User:
-    random_username = generate_username(1)[0]
-    random_username = random_username.lower()
-    pwo = PasswordGenerator()
-    pwo.minlen = 30 # (Optional)
-    pwo.maxlen = 30 # (Optional)
-    pwo.minuchars = 2 # (Optional)
-    pwo.minlchars = 3 # (Optional)
-    pwo.minnumbers = 1 # (Optional)
-    pwo.minschars = 0 # (Optional)
-    pwo.excludeschars = "!$%^*:="
-    random_password = pwo.generate()
-    random_email = f'{random_username}@example.com'
-    return user_util.add_user(f'{random_username}', random_password, random_email, google_id, exitOnFailure=False)
 
 
 if __name__ == "__main__":
