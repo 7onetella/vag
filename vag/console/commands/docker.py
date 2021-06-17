@@ -321,7 +321,7 @@ set -x
 
 export TERM=xterm
 
-/home/coder/go/bin/gotty --ws-origin "vscode-{{ username }}.curiosityworks.org" -p 2222 -c {{ username }}:{{ password }} -w /usr/bin/zsh >>/dev/null 2>&1 
+/home/coder/go/bin/gotty --ws-origin "vscode-{{ username }}.curiosityworks.org" -p 2222 -c "{{ username }}:{{ password }}" -w /usr/bin/zsh >>/dev/null 2>&1 
 """, username=username, password=password))
         st = os.stat('./gotty.sh')
         os.chmod('./gotty.sh', st.st_mode | stat.S_IEXEC)
