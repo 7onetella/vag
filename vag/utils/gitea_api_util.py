@@ -110,4 +110,4 @@ def create_public_key(username: str, key_body: str):
         # Create a user
         return api_instance.admin_create_public_key(username, key=key)
     except ApiException as e:
-        print("Exception when calling AdminApi->admin_create_user: %s\n" % e)                        
+        print("Exception when calling AdminApi->admin_create_public_key: %s\n" % e)                        

@@ -1,14 +1,17 @@
 from re import I
+from vag.utils.crypto_util import genereate_rsa_keys
 from vag.utils.cx_schema import *
 from vag.utils.cx_db_util import *
+from vag.utils import gitea_api_util
 from sqlalchemy.exc import IntegrityError, NoResultFound
 import hashlib
-
 
 def add_user(username: str, password: str, email: str, google_id: str, exitOnFailure=True) -> User:
     session = get_session()
     username = username.lower()
-    new_user = User(username=username, password=password, email=email, google_id=google_id)
+
+    private_key, public_key = genereate_rsa_keys()
+    new_user = User(username=username, password=password, email=email, google_id=google_id, private_key=private_key, public_key=public_key)
     session.add(new_user)
     try:
         session.commit()
@@ -35,6 +38,10 @@ def add_user(username: str, password: str, email: str, google_id: str, exitOnFai
     user_runtime_install = IDERuntimeInstall(user_ide_id=user_ide.id, runtime_install_id=runtime_install.id)
     session.add(user_runtime_install)
     session.commit()
+
+    gitea_api_util.create_user(username, password, email)
+    gitea_api_util.create_user_repo(username, 'project')
+    gitea_api_util.create_public_key(username, public_key)
 
     return new_user
 
