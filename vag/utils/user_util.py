@@ -23,7 +23,8 @@ def add_user(username: str, password: str, email: str, google_id: str, exitOnFai
             return None
 
     print("adding user_repo")
-    user_repo = UserRepo(uri=f'ssh://gitea@git-ssh.curiosityworks.org:2222/{username}/project.git ', user=new_user)
+    repo_uri = f'ssh://gitea@git-ssh.curiosityworks.org:2222/{username}/project.git'
+    user_repo = UserRepo(uri=repo_uri, user=new_user)
     session.add(user_repo)
     session.commit()
 
@@ -31,6 +32,11 @@ def add_user(username: str, password: str, email: str, google_id: str, exitOnFai
     ide = find_ide_by_name('vscode')
     user_ide = UserIDE(user=new_user, ide=ide)
     session.add(user_ide)                          
+    session.commit()
+
+    print("adding ide_repo")
+    ide_repo = IDERepo(user_ide=user_ide, uri=repo_uri)
+    session.add(ide_repo)                          
     session.commit()
 
     print("adding user_runtime_install")

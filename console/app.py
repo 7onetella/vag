@@ -310,7 +310,8 @@ def create_new_user(google_id: str) -> User:
     pwo.minuchars = 2 # (Optional)
     pwo.minlchars = 3 # (Optional)
     pwo.minnumbers = 1 # (Optional)
-    pwo.minschars = 1 # (Optional)
+    pwo.minschars = 0 # (Optional)
+    pwo.excludeschars = "!$%^*"
     random_password = pwo.generate()
     random_email = f'{random_username}@example.com'
     return user_util.add_user(f'{random_username}', random_password, random_email, google_id, exitOnFailure=False)
