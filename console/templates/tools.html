@@ -64,6 +64,30 @@
             </div>
           </div>
         </article>
+
+        <a id="username-btn" class="button is-light">copy username to clipboard</a>
+        <a id="password-btn" class="button is-light">copy password to clipboard</a>
+
+        <script>
+          var usernameCopyBtn = document.querySelector('#username-btn');
+          var passowrdCopyBtn = document.querySelector('#password-btn');
+
+          usernameCopyBtn.addEventListener('click', function(event) {
+            usernameCopyBtn.text = 'copied'
+            setTimeout(function() {
+              usernameCopyBtn.text = 'copy username to clipboard'  
+            }, 2000)
+            copyTextToClipboard('{{ profile.username }}');
+          });
+          passowrdCopyBtn.addEventListener('click', function(event) {
+            passowrdCopyBtn.text = 'copied' 
+            setTimeout(function() {
+              passowrdCopyBtn.text = 'copy password to clipboard'  
+            }, 2000)
+            copyTextToClipboard('{{ profile.password }}');
+          });
+        </script>
+        
         {% include "footer.html" %}
       </div>    
   </body>
