@@ -20,21 +20,21 @@ def get_gitea_access_token():
 def get_api_instance() -> giteapy.AdminApi:
     configuration = giteapy.Configuration()
     configuration.api_key['access_token'] = get_gitea_access_token()
-    configuration.host = 'https://git.curiosityworks.org/api/v1'
+    configuration.host = 'https://git-web.curiosityworks.org/api/v1'
     return giteapy.AdminApi(giteapy.ApiClient(configuration))
 
 
 def get_user_api_instance() -> giteapy.UserApi:
     configuration = giteapy.Configuration()
     configuration.api_key['access_token'] = get_gitea_access_token()
-    configuration.host = 'https://git.curiosityworks.org/api/v1'
+    configuration.host = 'https://git-web.curiosityworks.org/api/v1'
     return giteapy.UserApi(giteapy.ApiClient(configuration))
 
 
 def get_repository_api_instance() -> giteapy.RepositoryApi:
     configuration = giteapy.Configuration()
     configuration.api_key['access_token'] = get_gitea_access_token()
-    configuration.host = 'https://git.curiosityworks.org/api/v1'
+    configuration.host = 'https://git-web.curiosityworks.org/api/v1'
     return giteapy.RepositoryApi(giteapy.ApiClient(configuration))
 
 
@@ -42,7 +42,7 @@ def get_repository_api_instance_user_cred(username: str, password: str) -> gitea
     configuration = giteapy.Configuration()
     configuration.username = username
     configuration.password = password
-    configuration.host = 'https://git.curiosityworks.org/api/v1'
+    configuration.host = 'https://git-web.curiosityworks.org/api/v1'
     return giteapy.RepositoryApi(giteapy.ApiClient(configuration))
 
 

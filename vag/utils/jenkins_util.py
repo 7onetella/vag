@@ -5,7 +5,7 @@ import os
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.utils.crumb_requester import CrumbRequester
                   
-jenkins_url = "https://jenkins.7onetella.net/"
+jenkins_url = "https://jenkins.int.curiosityworks.org/"
 
 def run_job(job_name: str, params: dict):
     jenkins_api_token = os.getenv('JENKINS_API_TOKEN')
